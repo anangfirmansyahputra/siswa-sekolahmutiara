@@ -3,17 +3,17 @@ import Pengumuman from "@/components/Pengumuman";
 import Profile from "@/components/Profile";
 import { BellAlertIcon, ClipboardDocumentCheckIcon, UserGroupIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { Alert, Button } from "antd";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-
-Dashboard.layout = "L1";
 
 export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman }) {
     const [pending, setPending] = useState(ekstrakurikuler?.data?.filter((item) => item?.approve === false));
     const router = useRouter();
     const { data } = useSession();
     const role = data?.user?.user?.role;
+
+    console.log(data);
 
     const items = [
         {
@@ -115,21 +115,4 @@ export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman
             )}
         </div>
     );
-}
-
-export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
-
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
-    return {
-        props: {},
-    };
 }

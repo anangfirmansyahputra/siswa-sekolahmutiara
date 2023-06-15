@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-}
+    reactStrictMode: true,
+};
 
-module.exports = nextConfig
+module.exports = {
+    webpack: (config) => {
+        config.resolve.alias["@emotion/core"] = "@emotion/react";
+        return config;
+    },
+};
+
+module.exports = nextConfig;
