@@ -33,3 +33,12 @@ body {
 .swal2-container {
   font-family: 'Roboto', sans-serif;
 }
+
+.site-header {
+  background-color: #008846 !important;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between !important; */
+  justify-content: end !important;
+}

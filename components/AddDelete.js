@@ -2,7 +2,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
 import Link from "next/link";
 
-export default function AddDelete({ link, text }) {
+export default function AddDelete({ link, text, func }) {
     return (
         <Space>
             <Link
@@ -17,6 +17,7 @@ export default function AddDelete({ link, text }) {
                 </Button>
             </Link>
             <Button
+                onClick={func ? func : null}
                 type="default"
                 danger
                 icon={<DeleteOutlined />}

@@ -1,4 +1,4 @@
-import { BellOutlined, CalendarOutlined, CarryOutOutlined, FolderOutlined, LogoutOutlined, PieChartOutlined, ReconciliationOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, BellOutlined, CalendarOutlined, CarryOutOutlined, CrownOutlined, FolderOutlined, PieChartOutlined, ReconciliationOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 const items = [
     {
@@ -35,6 +35,16 @@ const items = [
         label: "Pengumuman",
         key: "pengumuman",
         icon: <BellOutlined />,
+    },
+    {
+        label: "Kelas",
+        key: "kelas",
+        icon: <AppstoreAddOutlined />,
+    },
+    {
+        label: "Prestasi",
+        key: "prestasi",
+        icon: <CrownOutlined />,
     },
 ];
 

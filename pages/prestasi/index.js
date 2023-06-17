@@ -1,48 +1,35 @@
-import AddDelete from "@/components/AddDelete";
-import useDeleteSiswaContext from "@/context/siswa/useDeleteSiswa";
-import useDeletePengajarContext from "@/context/useDeletePengajarContext";
+import kelasService from "@/services/kelas.service";
 import pengajarService from "@/services/pengajar.service";
-import { DeleteOutlined, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Popconfirm, Space, Spin, Table, Typography, message } from "antd";
-import dayjs from "dayjs";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
-Pengajar.layout = "L1";
+Prestasi.layout = "L1";
 
-export default function Pengajar({ pengajar }) {
+export default function Prestasi({ kelas }) {
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const [loadingFirst, setLoadingFirst] = useState(true);
-    const { handleDelete, loading } = useDeletePengajarContext();
+    const [selectedRow, setSelectedRow] = useState([]);
+
     const searchInput = useRef(null);
     const data = [];
     const { push, asPath } = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
-    pengajar?.data.map((item) =>
+
+    kelas?.data.map((item) =>
         data.push({
             key: item._id,
-            nama: item?.nama,
-            nik: item?.nik,
-            mengajar: item?.mengajar,
-            ekstrakurikuler: item?.ekstrakurikuler,
-            alamat: item?.alamat,
-            tgl: item?.tgl,
-            noTelp: item?.noTelp,
+            name: item?.name,
         })
     );
-
-    console.log(pengajar?.data?.map((item) => item?.ekstrakurikuler?.map((obj) => obj.name).join(", ")));
-
-    useEffect(() => {
-        setLoadingFirst(false);
-    }, []);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -145,11 +132,11 @@ export default function Pengajar({ pengajar }) {
     const confirm = async (record) => {
         try {
             setLoadingFirst(true);
-            const deleteRes = await pengajarService.delete(selectedRow?.map((item) => item?.nik));
-            message.success(deleteRes?.message);
+            const res = await kelasService.delete({ ids: selectedRow });
+            message.success(res?.message);
             push(asPath);
         } catch (err) {
-            message.error(err);
+            message.error(err?.message);
         } finally {
             setLoadingFirst(false);
         }
@@ -158,73 +145,25 @@ export default function Pengajar({ pengajar }) {
     const columns = [
         {
             title: "Nama",
-            dataIndex: "nama",
-            key: "nama",
-            width: "300px",
-            ...getColumnSearchProps("nama"),
+            dataIndex: "name",
+            key: "name",
+            // width: "300px",
+            ...getColumnSearchProps("name"),
             // fixed: "left",
             render: (_, record) => (
                 <Link
                     href={{
-                        pathname: `/pengajar/${record?.nik}`,
+                        pathname: `/kelas/${record?.key}`,
                     }}>
-                    {record?.nama}
+                    {record?.name}
                 </Link>
             ),
-        },
-        {
-            title: "NIK",
-            dataIndex: "nik",
-            key: "nik",
-            width: "200px",
-            ...getColumnSearchProps("nik"),
-        },
-        {
-            title: "Mengajar",
-            dataIndex: "mengajar",
-            key: "mengajar",
-            ...getColumnSearchProps("mengajar"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
-        },
-        {
-            title: "Ekstrakurikuler",
-            dataIndex: "ekstrakurikuler",
-            key: "ekstrakurikuler",
-            ...getColumnSearchProps("ekstrakurikuler"),
-            width: "200px",
-            render: (_, record) => <span>{record?.ekstrakurikuler?.length > 0 ? record?.ekstrakurikuler?.map((item) => item?.name).join(", ") : "-"}</span>,
-        },
-        {
-            title: "Alamat",
-            dataIndex: "alamat",
-            key: "alamat",
-            ...getColumnSearchProps("alamat"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
-        },
-        {
-            title: "Tanggal Lahir",
-            dataIndex: "tgl",
-            key: "tgl",
-            ...getColumnSearchProps("tgl"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
-            render: (_, record) => <span>{dayjs(record?.tgl).format("DD/MM/YYYY")}</span>,
-        },
-        {
-            title: "No Telp",
-            dataIndex: "noTelp",
-            key: "noTelp",
-            ...getColumnSearchProps("noTelp"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
         },
     ];
 
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRow(selectedRows);
+            setSelectedRow(selectedRowKeys);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === "Disabled User",
@@ -232,15 +171,13 @@ export default function Pengajar({ pengajar }) {
         }),
     };
 
-    const [selectedRow, setSelectedRow] = useState([]);
-
     return (
         <>
             <Head>
-                <title>Pengajar | Sistem Informasi Mutiara</title>
+                <title>Kelas | Sistem Informasi Mutiara</title>
             </Head>
             <>
-                <Typography.Title level={2}>Data Pengajar</Typography.Title>
+                <Typography.Title level={2}>Data Kelas</Typography.Title>
                 <div className="my-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
@@ -248,14 +185,14 @@ export default function Pengajar({ pengajar }) {
                                 title: <Link href="/">Dashboard</Link>,
                             },
                             {
-                                title: "Siswa",
+                                title: "Kelas",
                             },
                         ]}
                     />
                     <Space>
                         <Link
                             href={{
-                                pathname: "/pengajar/tambah",
+                                pathname: "/kelas/tambah",
                             }}>
                             <Button
                                 type="default"
@@ -276,7 +213,6 @@ export default function Pengajar({ pengajar }) {
                     </Space>
                 </div>
                 <Table
-                    loading={loadingFirst}
                     sticky
                     bordered
                     size="large"
@@ -289,9 +225,6 @@ export default function Pengajar({ pengajar }) {
                     }}
                     columns={columns}
                     dataSource={data}
-                    scroll={{
-                        x: 1200,
-                    }}
                 />
             </>
         </>

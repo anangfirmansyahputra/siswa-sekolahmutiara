@@ -1,9 +1,8 @@
 import CardDashboard from "@/components/CardDashboard";
-import Pengumuman from "@/components/Pengumuman";
-import Profile from "@/components/Profile";
 import { BellAlertIcon, ClipboardDocumentCheckIcon, UserGroupIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { Alert, Button } from "antd";
 import { getSession, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -12,8 +11,6 @@ Dashboard.layout = "L1";
 export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman }) {
     const [pending, setPending] = useState(ekstrakurikuler?.data?.filter((item) => item?.approve === false));
     const router = useRouter();
-    const { data } = useSession();
-    const role = data?.user?.user?.role;
 
     const items = [
         {
@@ -64,9 +61,12 @@ export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman
     ];
 
     return (
-        <div>
-            <p className="text-xl font-semibold">Dashboard</p>
-            {role === "admin" && (
+        <>
+            <Head>
+                <title>Dashboard | Sistem Informasi Sekolah Mutiara</title>
+            </Head>
+            <div>
+                <p className="text-xl font-semibold">Dashboard</p>
                 <div className="grid grid-cols-4 gap-5">
                     {items?.map((item) => (
                         <CardDashboard
@@ -79,41 +79,26 @@ export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman
                         />
                     ))}
                 </div>
-            )}
-            {role === "siswa" && (
-                <div>
-                    {pengumuman?.data?.map((item) => (
-                        <div key={item?._id}>
-                            <Pengumuman {...item} />
-                        </div>
-                    ))}
-                </div>
-            )}
-            {role === "admin" && pending.length > 0 && (
-                <div className="mt-5">
-                    <Alert
-                        message="Pemberitahuan"
-                        showIcon
-                        description={`Ada ${pending?.length} ekstrakurikuler yang belum disetujui`}
-                        type="warning"
-                        action={
-                            <Button
-                                onClick={() => router.push("/ekstrakurikuler/approve")}
-                                size="small"
-                                danger>
-                                Detail
-                            </Button>
-                        }
-                    />
-                </div>
-            )}
-            {role === "siswa" && (
-                <div className="mt-5 flex gap-5">
-                    <div className="w-[40%]"></div>
-                    <Profile />
-                </div>
-            )}
-        </div>
+                {pending?.length > 0 && (
+                    <div className="mt-5">
+                        <Alert
+                            message="Pemberitahuan"
+                            showIcon
+                            description={`Ada ${pending?.length} ekstrakurikuler yang belum disetujui`}
+                            type="warning"
+                            action={
+                                <Button
+                                    onClick={() => router.push("/ekstrakurikuler/approve")}
+                                    size="small"
+                                    danger>
+                                    Detail
+                                </Button>
+                            }
+                        />
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
 

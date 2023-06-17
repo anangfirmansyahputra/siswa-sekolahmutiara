@@ -1,15 +1,13 @@
 // import { items } from "@/constants/index";
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Layout, Typography } from "antd";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-import Sidebar from "./Sidebar";
+import { Layout, Typography } from "antd";
+import { SessionProvider } from "next-auth/react";
 import HeaderComp from "./HeaderComp";
+import Sidebar from "./Sidebar";
 
 const { Content, Footer, Header, Sider } = Layout;
 const { Title } = Typography;
 
-export default function LayoutComp({ children, session }) {
+export default function LayoutComp({ children, session, isLoading }) {
     return (
         <SessionProvider session={session}>
             <Layout className="h-screen">
@@ -28,7 +26,7 @@ export default function LayoutComp({ children, session }) {
                         style={{
                             textAlign: "center",
                         }}>
-                        Sekolah Mutiara ©2023 Created by Divana Faradila
+                        Sekolah Mutiara ©2023 Created by <span className="font-bold">Divana Faradila</span>
                     </Footer>
                 </Layout>
             </Layout>

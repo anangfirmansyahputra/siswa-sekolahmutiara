@@ -1,7 +1,9 @@
 import useDeleteEkstra from "@/context/ektrakurikuler/useDeleteEkstra";
+import ekstrakurikulerService from "@/services/ekstrakurikuler.service";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Alert, Breadcrumb, Button, Input, Popconfirm, Space, Table, message } from "antd";
+import { Alert, Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -24,15 +26,18 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
     const token = session?.user?.user?.accessToken;
     const role = session?.user?.user?.role;
 
+    console.log(ekstrakurikuler?.data[0]?.waktu?.map((item) => dayjs(item).format("HH:mm")).join(" - "));
+
     ekstrakurikuler?.data.map(
         (item) =>
             item?.approve &&
             data.push({
                 key: item._id,
-                nama: item?.nama,
+                name: item?.name,
                 pendaftar: item?.pendaftar?.length,
                 lokasi: item?.lokasi,
-                waktu: item?.waktu,
+                waktu: item?.waktu?.map((item) => dayjs(item).format("HH:mm")).join(" - "),
+                hari: item?.hari?.charAt(0).toUpperCase() + item?.hari?.slice(1),
                 wajib: item?.wajib === true ? "Wajib" : "Pilihan",
             })
     );
@@ -139,29 +144,22 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
         headers: { "admin-token": `${token}` },
     };
 
-    const confirm = (record) => {
-        // handleDelete()
-        const data = [];
-        // data.push(record?.key);
-        // console.log(record?.key);
-        handleDelete(record?.key, config)
-            .then(message.success("Click on Yes"))
-            .catch((err) => console.log(err));
-    };
-
-    const cancel = (e) => {
-        console.log(e);
-        message.error("Click on No");
-    };
-
     const columns = [
         {
             title: "Nama",
-            dataIndex: "nama",
-            key: "nama",
+            dataIndex: "name",
+            key: "name",
             width: "fit",
-            ...getColumnSearchProps("nama"),
+            ...getColumnSearchProps("name"),
             // fixed: "left",
+            render: (_, record) => (
+                <Link
+                    href={{
+                        pathname: `/ekstrakurikuler/${record?.key}`,
+                    }}>
+                    {record?.name}
+                </Link>
+            ),
         },
         {
             title: "Pendaftar",
@@ -193,6 +191,12 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
             ...getColumnSearchProps("waktu"),
         },
         {
+            title: "Hari",
+            dataIndex: "hari",
+            key: "hari",
+            ...getColumnSearchProps("hari"),
+        },
+        {
             title: "Status",
             dataIndex: "wajib",
             key: "wajib",
@@ -200,41 +204,11 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
             sortDirections: ["descend", "ascend"],
             render: (_, record) => <div className={`w-fit ${record?.wajib === "Wajib" ? "bg-green-300" : "bg-yellow-300"} rounded px-5 py-1 `}>{record?.wajib}</div>,
         },
-        {
-            title: "Detail",
-            dataIndex: "detail",
-            fixed: "right",
-            render: (_, record) => (
-                // <Space>
-                //     <Popconfirm
-                //         title="Yakin ingin menghapus?"
-                //         onConfirm={() => confirm(record)}
-                //         onCancel={cancel}>
-                //         <Button
-                //             type="primary"
-                //             danger>
-                //             Delete
-                //         </Button>
-                //     </Popconfirm>
-                //     <Button
-                //         type="primary"
-                //         onClick={() => router.push(`/ekstrakurikuler/${record?.key}`)}>
-                //         Edit
-                //     </Button>
-                // </Space>
-                <Button
-                    type="link"
-                    onClick={() => router.push(`/ekstrakurikuler/${record?.key}`)}>
-                    Detail
-                </Button>
-            ),
-        },
     ];
 
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-            setSelectedRow(selectedRowKeys);
+            setSelectedRow(selectedRows);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === "Disabled User",
@@ -274,24 +248,14 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
         message.success("Reject ekstrakurikuler berhasil");
     };
 
-    if (role === "siswa") {
-        columns.splice(4, 1);
-        columns.pop();
-        columns.push({
-            title: "Join",
-            dataIndex: "join",
-            render: (_, record) => (
-                <Button
-                    type="primary"
-                    onClick={() => router.push(`/ekstrakurikuler/detail/${record?.key}`)}>
-                    Lihat Detail
-                </Button>
-            ),
-        });
-    }
+    const confirm = (e) => {
+        ekstrakurikulerService.delete(selectedRow?.map((item) => item?.key)).then(() => message.success("Delete success"));
+        router.push(router.asPath);
+    };
 
     return (
         <div>
+            <Typography.Title level={2}>Data Ekstrakurikuler</Typography.Title>
             <div className="my-5 flex items-center justify-between">
                 <Breadcrumb
                     items={[
@@ -303,38 +267,34 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
                         },
                     ]}
                 />
-
-                {role !== "siswa" && (
-                    <Space>
-                        <Link
-                            href={{
-                                pathname: "/ekstrakurikuler/tambah",
-                            }}>
-                            <Button
-                                type="default"
-                                icon={<DeleteOutlined />}
-                                size="middle">
-                                Tambah
-                            </Button>
-                        </Link>
+                <Space>
+                    <Link
+                        href={{
+                            pathname: "/ekstrakurikuler/tambah",
+                        }}>
                         <Button
                             type="default"
-                            danger
                             icon={<DeleteOutlined />}
-                            size="middle"></Button>
-                    </Space>
-                )}
+                            size="middle">
+                            Tambah
+                        </Button>
+                    </Link>
+                    {selectedRow.length > 0 && (
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={confirm}
+                            okText="Yes"
+                            cancelText="No">
+                            <Button
+                                type="default"
+                                danger
+                                icon={<DeleteOutlined />}
+                                size="middle"></Button>
+                        </Popconfirm>
+                    )}
+                </Space>
             </div>
-            {role === "siswa" && (
-                <div className="mb-5">
-                    <Alert
-                        message="Pemberitahuan"
-                        showIcon
-                        description={`Perhatikan dengan baik ketika ingin memilih ekstrakurikuler, karena ekstrakurikuler yang dipilih tidak dapat diubah`}
-                        type="warning"
-                    />
-                </div>
-            )}
             {pending.length > 0 && (
                 <div>
                     <Alert

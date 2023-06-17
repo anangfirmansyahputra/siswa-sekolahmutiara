@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Loading from "@/components/Loading";
+import { ConfigProvider, Spin } from "antd";
 
 const Layout2 = ({ children, session }) => {
     return <SessionProvider session={session}>{children}</SessionProvider>;
@@ -43,17 +44,30 @@ function MyApp({ Component, pageProps, pengajar, ekstrakurikuler, pengumuman, si
 
     return (
         <AdminProvider>
-            <Layout>
-                {isLoading && <Loading />}
-                <Component
-                    {...pageProps}
-                    pengajar={pengajar}
-                    ekstrakurikuler={ekstrakurikuler}
-                    pengumuman={pengumuman}
-                    siswa={siswa}
-                    kelas={kelas}
-                />
-            </Layout>
+            <ConfigProvider
+                theme={{
+                    token: {
+                        colorPrimary: "#008846",
+                        fontSize: 12,
+                    },
+                }}>
+                <Spin spinning={isLoading}>
+                    <Layout
+                        isLoading={isLoading}
+                        style={{
+                            height: "100vh",
+                        }}>
+                        <Component
+                            {...pageProps}
+                            pengajar={pengajar}
+                            ekstrakurikuler={ekstrakurikuler}
+                            pengumuman={pengumuman}
+                            siswa={siswa}
+                            kelas={kelas}
+                        />
+                    </Layout>
+                </Spin>
+            </ConfigProvider>
         </AdminProvider>
     );
 }

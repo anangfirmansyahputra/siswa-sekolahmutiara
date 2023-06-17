@@ -32,26 +32,30 @@ export default function HeaderComp() {
     // console.log(data?.user?.user?.username);
 
     return (
-        <Header
-            style={{
-                background: "white",
-            }}>
-            <div className="flex items-center justify-between">
-                <div>Sekolah Mutiara</div>
-                <Dropdown
-                    menu={{
-                        items,
-                    }}
-                    placement="bottomLeft"
-                    arrow>
-                    <Button
-                        type="default"
-                        icon={<UserOutlined />}>
-                        {data?.user?.user?.username}
-                        <DownOutlined />
-                    </Button>
-                </Dropdown>
-            </div>
+        <Header className="site-header bg-red-500">
+            <Dropdown
+                menu={{
+                    items,
+                }}
+                placement="bottomLeft"
+                arrow>
+                <Button
+                    type="ghost"
+                    icon={
+                        <UserOutlined
+                            style={{
+                                color: "white",
+                            }}
+                        />
+                    }>
+                    <span className="text-white">{data?.user?.user?.username}</span>
+                    <DownOutlined
+                        style={{
+                            color: "white",
+                        }}
+                    />
+                </Button>
+            </Dropdown>
         </Header>
     );
 }

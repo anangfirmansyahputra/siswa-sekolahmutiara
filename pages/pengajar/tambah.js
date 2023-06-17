@@ -1,19 +1,11 @@
-import { Breadcrumb, Divider, Space, Spin } from "antd";
-import Link from "next/link";
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Cascader, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select, Switch, TreeSelect, Upload } from "antd";
-import { inputs } from "@/constants";
-import { useRef, useState } from "react";
 import useCreatePengajarContext from "@/context/useCreatePengajarContext";
+import { PlusOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography } from "antd";
 import { useSession } from "next-auth/react";
-const { RangePicker } = DatePicker;
-const { TextArea } = Input;
-const normFile = (e) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e?.fileList;
-};
+import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 
 Tambah.layout = "L1";
 
@@ -21,6 +13,8 @@ let index = 0;
 
 export default function Tambah() {
     const [form] = Form.useForm();
+    const [loadingFirst, setLoadingFirst] = useState(true);
+    const { push } = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
     const dateFormat = "YYYY/MM/DD";
@@ -30,9 +24,8 @@ export default function Tambah() {
     };
 
     const onFinish = (values) => {
-        console.log("Success:", { ...values, tgl: values.tgl.format(dateFormat) });
         handleCreatePengajar({ ...values }, config);
-        // form.resetFields();
+        form.resetFields();
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -56,113 +49,175 @@ export default function Tambah() {
 
     const { handleCreatePengajar, loading } = useCreatePengajarContext();
 
-    return (
-        <div>
-            <div className="my-[25px] flex items-center justify-between">
-                <Breadcrumb
-                    items={[
-                        {
-                            title: <Link href="/">Dashboard</Link>,
-                        },
-                        {
-                            title: <Link href="/pengajar">Pengajar</Link>,
-                        },
-                        {
-                            title: "Tambah",
-                        },
-                    ]}
-                />
-            </div>
-            <div className="h-fit w-full bg-white p-10">
-                <Spin spinning={loading}>
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 3 }}
-                        wrapperCol={{ span: 21 }}
-                        className="w-full"
-                        form={form}
-                        initialValues={{ remember: true }}
-                        onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
-                        autoComplete="off">
-                        {inputs.map((item) => (
-                            <Form.Item
-                                labelAlign="left"
-                                key={item?.id}
-                                name={item?.name}
-                                label={item?.label}
-                                rules={[item?.rules]}>
-                                {item?.type === "password" && <Input.Password size="middle" />}
-                                {item?.type === "date" && <DatePicker format={dateFormat} />}
-                                {item?.type === "text" && <Input size="middle" />}
-                                {item?.type === "select" && (
-                                    <Select
-                                        style={{
-                                            width: 300,
-                                        }}
-                                        placeholder="custom dropdown render"
-                                        dropdownRender={(menu) => (
-                                            <>
-                                                {menu}
-                                                <Divider
-                                                    style={{
-                                                        margin: "8px 0",
-                                                    }}
-                                                />
-                                                <Space
-                                                    style={{
-                                                        padding: "0 8px 4px",
-                                                    }}>
-                                                    <Input
-                                                        placeholder="Please enter item"
-                                                        ref={inputRef}
-                                                        value={name}
-                                                        onChange={onNameChange}
-                                                    />
-                                                    <Button
-                                                        type="text"
-                                                        icon={<PlusOutlined />}
-                                                        onClick={addItem}>
-                                                        Add item
-                                                    </Button>
-                                                </Space>
-                                            </>
-                                        )}
-                                        options={items.map((item) => ({
-                                            label: item,
-                                            value: item,
-                                        }))}
-                                    />
-                                )}
-                                {item?.type === "number" && (
-                                    <InputNumber
-                                        size="middle"
-                                        style={{
-                                            width: "100%",
-                                        }}
-                                    />
-                                )}
-                            </Form.Item>
-                        ))}
+    useEffect(() => {
+        setLoadingFirst(false);
+    }, []);
 
-                        <Form.Item wrapperCol={{ offset: 3, span: 21 }}>
-                            <Space>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit">
-                                    Submit
-                                </Button>
-                                <Button
-                                    type="primary"
-                                    danger
-                                    htmlType="reset">
-                                    Reset
-                                </Button>
-                            </Space>
-                        </Form.Item>
-                    </Form>
-                </Spin>
+    const [isLengthValid, setIsLengthValid] = useState(true);
+
+    const validateLength = (_, value) => {
+        if (value && value.length !== 19) {
+            setIsLengthValid(false);
+            return Promise.reject(new Error("Panjang harus tepat 19 karakter"));
+        }
+        setIsLengthValid(true);
+        return Promise.resolve();
+    };
+
+    return (
+        <>
+            <Head>
+                <title>Form Pengajar | Sistem Informasi Mutiara</title>
+            </Head>
+            <div>
+                <Typography.Title level={2}>Form Pengajar</Typography.Title>
+                <div className="my-[25px] flex items-center justify-between">
+                    <Breadcrumb
+                        items={[
+                            {
+                                title: <Link href="/">Dashboard</Link>,
+                            },
+                            {
+                                title: <Link href="/pengajar">Pengajar</Link>,
+                            },
+                            {
+                                title: "Tambah",
+                            },
+                        ]}
+                    />
+                </div>
+                <div className="h-fit w-full bg-white p-10 shadow-lg">
+                    <Spin spinning={loadingFirst}>
+                        <Form
+                            name="basic"
+                            form={form}
+                            initialValues={{ remember: true }}
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                            autoComplete="off"
+                            layout="vertical">
+                            <Row gutter={16}>
+                                <Col span={24}>
+                                    <Form.Item
+                                        label="Nama Lengkap"
+                                        name="nama">
+                                        <Input placeholder="Nama Lengkap" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="nik"
+                                        label="NIK"
+                                        validateStatus={isLengthValid ? "success" : "error"}
+                                        help={!isLengthValid && "Panjang harus tepat 19 karakter"}
+                                        rules={[{ validator: validateLength }]}>
+                                        <Input placeholder="NIK" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Password"
+                                        name="password">
+                                        <Input.Password placeholder="Password" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Mengajar"
+                                        name="mengajar">
+                                        <Select
+                                            style={{
+                                                width: "100%",
+                                            }}
+                                            placeholder="Mengajar"
+                                            dropdownRender={(menu) => (
+                                                <>
+                                                    {menu}
+                                                    <Divider
+                                                        style={{
+                                                            margin: "8px 0",
+                                                        }}
+                                                    />
+                                                    <Space
+                                                        style={{
+                                                            padding: "0 8px 4px",
+                                                        }}>
+                                                        <Input
+                                                            placeholder="Please enter item"
+                                                            ref={inputRef}
+                                                            value={name}
+                                                            onChange={onNameChange}
+                                                        />
+                                                        <Button
+                                                            type="text"
+                                                            icon={<PlusOutlined />}
+                                                            onClick={addItem}>
+                                                            Add item
+                                                        </Button>
+                                                    </Space>
+                                                </>
+                                            )}
+                                            options={items.map((item) => ({
+                                                label: item,
+                                                value: item,
+                                            }))}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Tanggal Lahir"
+                                        name="tgl">
+                                        <DatePicker
+                                            format={dateFormat}
+                                            style={{
+                                                width: "100%",
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Alamat"
+                                        name="alamat">
+                                        <Input placeholder="Alamat" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Nomor Telp"
+                                        name="noTelp">
+                                        <Input placeholder="Nomor Telp" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Form.Item>
+                                <Space>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit">
+                                        Submit
+                                    </Button>
+                                    <Button
+                                        onClick={() => push("/pengajar")}
+                                        type="default"
+                                        danger
+                                        htmlType="button">
+                                        Back
+                                    </Button>
+                                </Space>
+                            </Form.Item>
+                        </Form>
+                    </Spin>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

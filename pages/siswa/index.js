@@ -1,30 +1,37 @@
-import AddDelete from "@/components/AddDelete";
-import useDeleteSiswaContext from "@/context/siswa/useDeleteSiswa";
-import { SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Popconfirm, Space, Table, message } from "antd";
+import siswaService from "@/services/siswa.service";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
+import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
 Pengajar.layout = "L1";
 
 export default function Pengajar({ siswa, kelas }) {
+    const { push, asPath } = useRouter();
+
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
-    const { handleDelete, loading } = useDeleteSiswaContext();
+    const [loading, setLoading] = useState(false);
+    const [selectedRow, setSelectedRow] = useState([]);
+
     const searchInput = useRef(null);
     const data = [];
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
+
     siswa?.data.map((item) =>
         data.push({
             key: item._id,
             nama: item?.name,
             nis: item?.nis,
             alamat: item?.alamat,
-            tgl: item?.tgl,
+            tgl: dayjs(item?.tgl).format("DD/MM/YY"),
             nilai: item?.nilai,
         })
     );
@@ -131,22 +138,18 @@ export default function Pengajar({ siswa, kelas }) {
         headers: { "admin-token": `${token}` },
     };
 
-    const confirm = (record) => {
-        const data = [];
-        data.push(record?.nis);
-        handleDelete(data, config) // Call handleDelete from useDeleteSiswaContext
-            .then(() => {
-                message.success("Data siswa berhasil dihapus");
-            })
-            .catch((err) => {
-                console.log(err);
-                message.error("Terjadi kesalahan saat menghapus data siswa");
-            });
-    };
-
-    const cancel = (e) => {
-        console.log(e);
-        message.error("Click on No");
+    const confirm = async (record) => {
+        try {
+            setLoading(true);
+            const deleteRes = await siswaService.delete(selectedRow?.map((item) => item?.nis));
+            message.success(deleteRes?.message);
+            push(asPath);
+        } catch (err) {
+            console.log(err);
+            message.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const columns = [
@@ -156,7 +159,14 @@ export default function Pengajar({ siswa, kelas }) {
             key: "nama",
             width: "300px",
             ...getColumnSearchProps("nama"),
-            fixed: "left",
+            render: (_, record) => (
+                <Link
+                    href={{
+                        pathname: `siswa/${record?.nis}`,
+                    }}>
+                    {record?.nama}
+                </Link>
+            ),
         },
         {
             title: "NIS",
@@ -187,26 +197,13 @@ export default function Pengajar({ siswa, kelas }) {
             ...getColumnSearchProps("nilai"),
             sortDirections: ["descend", "ascend"],
             width: "200px",
-        },
-        {
-            title: "Edit",
-            dataIndex: "edit",
-            fixed: "right",
-            width: "200px",
             render: (_, record) => (
-                <Space>
-                    <Popconfirm
-                        title="Yakin ingin menghapus?"
-                        onConfirm={() => confirm(record)}
-                        onCancel={cancel}>
-                        <Button
-                            type="primary"
-                            danger>
-                            Delete
-                        </Button>
-                    </Popconfirm>
-                    <Button type="primary">Edit</Button>
-                </Space>
+                <Link
+                    href={{
+                        pathname: `nilai/${record?.key}`,
+                    }}>
+                    Detail
+                </Link>
             ),
         },
     ];
@@ -214,7 +211,7 @@ export default function Pengajar({ siswa, kelas }) {
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-            setSelectedRow(selectedRowKeys);
+            setSelectedRow(selectedRows);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === "Disabled User",
@@ -223,44 +220,66 @@ export default function Pengajar({ siswa, kelas }) {
         }),
     };
 
-    const [selectedRow, setSelectedRow] = useState([]);
-
     return (
-        <div>
-            <div className="my-5 flex items-center justify-between">
-                <Breadcrumb
-                    items={[
-                        {
-                            title: <Link href="/">Dashboard</Link>,
-                        },
-                        {
-                            title: "Siswa",
-                        },
-                    ]}
-                />
-                <AddDelete
-                    link={"/siswa/tambah"}
-                    text="Tambah"
+        <>
+            <Head>
+                <title>Siswa | Sistem Informasi Mutiara</title>
+            </Head>
+            <div>
+                <Typography.Title level={2}>Data Siswa</Typography.Title>
+                <div className="my-5 flex items-center justify-between">
+                    <Breadcrumb
+                        items={[
+                            {
+                                title: <Link href="/">Dashboard</Link>,
+                            },
+                            {
+                                title: "Siswa",
+                            },
+                        ]}
+                    />
+                    <Space>
+                        <Link
+                            href={{
+                                pathname: "/pengajar/tambah",
+                            }}>
+                            <Button
+                                type="default"
+                                icon={<DeleteOutlined />}>
+                                Tambah
+                            </Button>
+                        </Link>
+                        {selectedRow?.length > 0 && (
+                            <Popconfirm
+                                title="Delete Data"
+                                description="Are you sure to delete this data?"
+                                onConfirm={confirm}
+                                okText="Yes"
+                                cancelText="No">
+                                <Button danger>Delete</Button>
+                            </Popconfirm>
+                        )}
+                    </Space>
+                </div>
+                <Table
+                    sticky
+                    bordered
+                    size="large"
+                    rowSelection={{
+                        type: "checkbox",
+                        ...rowSelection,
+                    }}
+                    style={{
+                        height: "100",
+                    }}
+                    columns={columns}
+                    dataSource={data}
+                    scroll={{
+                        x: 1200,
+                    }}
                 />
             </div>
-            <Table
-                sticky
-                bordered
-                size="large"
-                rowSelection={{
-                    type: "checkbox",
-                    ...rowSelection,
-                }}
-                style={{
-                    height: "100",
-                }}
-                columns={columns}
-                dataSource={data}
-                scroll={{
-                    x: 1200,
-                }}
-            />
-        </div>
+        </>
     );
 }
 

@@ -1,93 +1,42 @@
-import useCreateSiswaContext from "@/context/siswa/useCreateSiswa";
-import { PlusOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography, Upload } from "antd";
+import siswaService from "@/services/siswa.service";
+import { Breadcrumb, Button, Col, DatePicker, Form, Input, Row, Space, Spin, Typography, message } from "antd";
+import dayjs from "dayjs";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 Page.layout = "L1";
 
-const { RangePicker } = DatePicker;
-
-const inputs = [
-    {
-        id: 1,
-        name: "name",
-        label: "Nama",
-        rules: {
-            required: true,
-            message: "Mohon masukkan nama siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 2,
-        name: "nis",
-        label: "NIS",
-        rules: {
-            required: true,
-            message: "Mohon masukkan NIS siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 3,
-        name: "password",
-        label: "Password",
-        rules: {
-            required: true,
-            message: "Mohon masukkan password siswa",
-        },
-        type: "password",
-    },
-    {
-        id: 4,
-        name: "alamat",
-        label: "Alamat",
-        rules: {
-            required: true,
-            message: "Mohon masukkan alamat siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 5,
-        name: "tgl",
-        label: "Tanggal Lahir",
-        rules: {
-            required: true,
-            message: "Mohon masukkan tanggal lahir siswa",
-        },
-        type: "date",
-    },
-    {
-        id: 6,
-        name: "kelas",
-        label: "Kelas",
-        rules: {
-            required: true,
-            message: "Mohon masukkan kelas",
-        },
-        type: "select",
-    },
-];
-
-export default function Page({ kelas }) {
-    const { push } = useRouter();
+export default function Page({ kelas, siswa }) {
+    const { query, push } = useRouter();
 
     // useState
+    const [data, setData] = useState(siswa?.data?.find((item) => item?.nis == query?.id));
+    const [loading, setLoading] = useState(false);
+
     const [form] = Form.useForm();
-    const { loading, handleCreateSiswa } = useCreateSiswaContext(); // Gunakan hook untuk membuat data siswa
 
-    const onFinish = (values) => {
-        handleCreateSiswa(values); // Panggil fungsi handleCreateSiswa dengan nilai-nilai form
-        form.resetFields();
+    const onFinish = async (values) => {
+        try {
+            setLoading(true);
+            await siswaService.edit(values, data?._id);
+            form.resetFields();
+            message.success("Edit siswa success");
+            push("/siswa");
+        } catch (err) {
+            message.error("Edit siswa failed");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
-    };
+    useEffect(() => {
+        if (data) {
+            const formattedDate = dayjs(data.tgl).format("YYYY-MM-DD");
+            form.setFieldsValue({ ...data, tgl: dayjs(formattedDate) });
+        }
+    }, [data]);
 
     return (
         <>
@@ -95,7 +44,7 @@ export default function Page({ kelas }) {
                 <title>Siswa | Sistem Informasi Mutiara</title>
             </Head>
             <div>
-                <Typography.Title level={2}>Form Tambah Siswa</Typography.Title>
+                <Typography.Title level={2}>Form Edit Siswa</Typography.Title>
                 <div className="my-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
@@ -106,13 +55,13 @@ export default function Page({ kelas }) {
                                 title: <Link href="/siswa">Siswa</Link>,
                             },
                             {
-                                title: "Tambah",
+                                title: data?.name,
                             },
                         ]}
                     />
                 </div>
                 <div className="h-fit w-full bg-white p-10">
-                    <Spin spinning={false}>
+                    <Spin spinning={loading}>
                         <Form
                             name="basic"
                             className="w-full"
@@ -120,7 +69,7 @@ export default function Page({ kelas }) {
                             layout="vertical"
                             initialValues={{ remember: true }}
                             onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
+                            // onFinishFailed={onFinishFailed}
                             autoComplete="off">
                             <Row gutter={16}>
                                 <Col span={12}>
