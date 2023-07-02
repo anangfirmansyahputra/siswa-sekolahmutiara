@@ -1,12 +1,11 @@
-import "@/styles/globals.css";
 import LayoutComp from "@/components/LayoutComp";
 import { AdminProvider } from "@/context";
-import { SessionProvider, getSession, useSession } from "next-auth/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import Loading from "@/components/Loading";
+import http from '@/plugin/https';
+import "@/styles/globals.css";
 import { ConfigProvider, Spin } from "antd";
+import { SessionProvider, getSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const Layout2 = ({ children, session }) => {
     return <SessionProvider session={session}>{children}</SessionProvider>;
@@ -89,19 +88,19 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     let prestasi = [];
 
     try {
-        const response = await axios.get("http://localhost:8000/api/admin/pengajar");
+        const response = await http.get("/admin/pengajar");
         pengajar = response.data;
-        const { data } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/pengajar/ekstrakurikuler");
+        const { data } = await http.get("/pengajar/ekstrakurikuler");
         ekstrakurikuler = data;
-        const { data: dataSiswa } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa");
+        const { data: dataSiswa } = await http.get("/siswa");
         siswa = dataSiswa;
-        const { data: dataPengumuman } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengumuman");
+        const { data: dataPengumuman } = await http.get("/admin/pengumuman");
         pengumuman = dataPengumuman;
-        const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
+        const { data: dataKelas } = await http.get("/kelas");
         kelas = dataKelas;
-        const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
+        const { data: dataGallery } = await http.get("/gallery/");
         gallery = dataGallery;
-        const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
+        const { data: dataPrestasi } = await http.get("/prestasi/");
         prestasi = dataPrestasi;
     } catch (error) {
         console.error(error);

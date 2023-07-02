@@ -1,4 +1,4 @@
-import { AppstoreAddOutlined, BellOutlined, CalendarOutlined, CameraOutlined, CarryOutOutlined, CrownOutlined, FolderOutlined, PieChartOutlined, ReconciliationOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, BellOutlined, CalendarOutlined, CameraOutlined, CarryOutOutlined, CrownOutlined, FileSearchOutlined, FolderOutlined, PieChartOutlined, ReconciliationOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 const items = [
     {
@@ -54,7 +54,7 @@ const items = [
     {
         label: "Pelajaran",
         key: "matpel",
-        icon: <CameraOutlined />,
+        icon: <FileSearchOutlined />,
     },
 ];
 
