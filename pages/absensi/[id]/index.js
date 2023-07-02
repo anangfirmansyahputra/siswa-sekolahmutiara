@@ -268,7 +268,6 @@ export default function Page({ ekstrakurikuler, kelas }) {
     };
 
     const handleAbsen = async () => {
-        setLoading(true)
         const payload = {
             kelas: kelasId,
             pertemuan,
@@ -287,11 +286,14 @@ export default function Page({ ekstrakurikuler, kelas }) {
                 })
 
                 if (confirm.isConfirmed) {
+                    setLoading(true)
                     const res = await absenService.absen(payload)
                     message.success(res?.message)
                     setModalOpen(false)
                     push(asPath)
                     form.resetFields()
+                    setKelasId(null)
+                    setPertemuan(0)
                 } else {
                     // form.resetFields()
                 }
@@ -366,6 +368,8 @@ export default function Page({ ekstrakurikuler, kelas }) {
                     onOk={() => setModalOpen(false)}
                     onCancel={() => {
                         if (!loading) {
+                            setKelasId(null)
+                            setPertemuan(0)
                             setModalOpen(false)
                             form.resetFields()
                         }

@@ -38,4 +38,5 @@ export default NextAuth({
             return session;
         },
     },
+    secret: "tolejs"
 });

@@ -18,6 +18,12 @@ const siswaService = {
 
         return data;
     },
+
+    async getById(id) {
+        const { data } = await http.get(`/siswa/${id}`)
+
+        return data
+    }
 };
 
 export default siswaService;

@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Space, Table } from "antd";
+import { Breadcrumb, Button, Card, Space, Table } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -11,28 +11,28 @@ Pendaftar.layout = "L1";
 
 export default function Pendaftar({ ekstrakurikuler }) {
     const { query } = useRouter();
+
     const ekstra = ekstrakurikuler?.data?.find((item) => item?._id === query.id);
+    const isWajib = ekstra?.wajib
 
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef(null);
-    const [pending, setPending] = useState(ekstrakurikuler?.data?.filter((item) => item?.approve === false));
-    const [showPending, setShowPending] = useState(false);
     const data = [];
-    const router = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
-    const role = session?.user?.user?.role;
 
     ekstra?.pendaftar?.map((item) =>
         data.push({
             key: item?._id,
-            nis: item?.siswa?.nis,
-            name: item?.siswa?.name,
-            nilai: item?.nilai,
-            absensi: item?.absensi,
+            nis: item?.nis,
+            name: item?.name,
+            nilai: isWajib ? item?.nilai?.ekstrakurikulerWajib?.nilai : item?.nilai?.ekstrakurikulerPilihan?.nilai,
+            absen: isWajib ? item?.nilai?.ekstrakurikulerWajib?.absen : item?.nilai?.ekstrakurikulerPilihan?.absen,
         })
     );
+
+    console.log(data);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -132,10 +132,6 @@ export default function Pendaftar({ ekstrakurikuler }) {
             ),
     });
 
-    const config = {
-        headers: { "admin-token": `${token}` },
-    };
-
     const columns = [
         {
             title: "NIS",
@@ -154,9 +150,9 @@ export default function Pendaftar({ ekstrakurikuler }) {
         },
         {
             title: "Absensi",
-            dataIndex: "absensi",
-            key: "absensi",
-            ...getColumnSearchProps("absensi"),
+            dataIndex: "absen",
+            key: "absens",
+            ...getColumnSearchProps("absen"),
         },
         {
             title: "Nilai",
@@ -183,23 +179,21 @@ export default function Pendaftar({ ekstrakurikuler }) {
                     ]}
                 />
             </div>
-            <Table
-                bordered
-                size="large"
-                rowSelection={{
-                    type: "checkbox",
-                    // ...rowSelection,
-                }}
-                style={{
-                    height: "100",
-                    marginTop: 10,
-                }}
-                columns={columns}
-                dataSource={data}
-                scroll={{
-                    x: "fit",
-                }}
-            />
+            <Card>
+                <Table
+                    bordered
+                    size="large"
+                    style={{
+                        height: "100",
+                        marginTop: 10,
+                    }}
+                    columns={columns}
+                    dataSource={data}
+                    scroll={{
+                        x: "fit",
+                    }}
+                />
+            </Card>
         </div>
     );
 }

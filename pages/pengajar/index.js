@@ -2,8 +2,8 @@ import AddDelete from "@/components/AddDelete";
 import useDeleteSiswaContext from "@/context/siswa/useDeleteSiswa";
 import useDeletePengajarContext from "@/context/useDeletePengajarContext";
 import pengajarService from "@/services/pengajar.service";
-import { DeleteOutlined, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Popconfirm, Space, Spin, Table, Typography, message } from "antd";
+import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Card, Input, Layout, Popconfirm, Space, Spin, Table, Typography, message } from "antd";
 import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
 Pengajar.layout = "L1";
+const { Content } = Layout
 
 export default function Pengajar({ pengajar }) {
     // State
@@ -238,59 +239,70 @@ export default function Pengajar({ pengajar }) {
                 <title>Pengajar | Sistem Informasi Mutiara</title>
             </Head>
             <>
-                <Typography.Title level={2}>Data Pengajar</Typography.Title>
-                <div className="my-5 flex items-center justify-between">
-                    <Breadcrumb
-                        items={[
-                            {
-                                title: <Link href="/">Dashboard</Link>,
-                            },
-                            {
-                                title: "Siswa",
-                            },
-                        ]}
-                    />
-                    <Space>
-                        <Link
-                            href={{
-                                pathname: "/pengajar/tambah",
-                            }}>
-                            <Button
-                                type="default"
-                                icon={<DeleteOutlined />}>
-                                Tambah
-                            </Button>
-                        </Link>
-                        {selectedRow?.length > 0 && (
-                            <Popconfirm
-                                title="Delete Data"
-                                description="Are you sure to delete this data?"
-                                onConfirm={confirm}
-                                okText="Yes"
-                                cancelText="No">
-                                <Button danger>Delete</Button>
-                            </Popconfirm>
-                        )}
-                    </Space>
-                </div>
-                <Table
-                    loading={loadingFirst}
-                    sticky
-                    bordered
-                    size="large"
-                    rowSelection={{
-                        type: "checkbox",
-                        ...rowSelection,
-                    }}
-                    style={{
-                        height: "100",
-                    }}
-                    columns={columns}
-                    dataSource={data}
-                    scroll={{
-                        x: 1200,
-                    }}
-                />
+                <Content style={{ margin: "0 16px" }}>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <Typography.Title
+                                level={3}
+                                style={{ marginBottom: "0" }}>
+                                Pengajar
+                            </Typography.Title>
+                            <Breadcrumb style={{ margin: "0 0 16px" }} items={[
+                                {
+                                    title: <Link href={{
+                                        pathname: "/dashboard"
+                                    }}>Dashboard</Link>
+                                },
+                                {
+                                    title: "Pengajar"
+                                }
+                            ]} />
+                        </div>
+                        <Space>
+                            <Link
+                                href={{
+                                    pathname: "/pengajar/tambah",
+                                }}>
+                                <Button
+                                    type="primary"
+                                    icon={<PlusOutlined />}>
+                                    Pengajar
+                                </Button>
+                            </Link>
+                            {selectedRow?.length > 0 && (
+                                <Popconfirm
+                                    title="Delete Data"
+                                    description="Are you sure to delete this data?"
+                                    onConfirm={confirm}
+                                    okText="Yes"
+                                    cancelText="No">
+                                    <Button danger type="primary" icon={<DeleteOutlined />}>Hapus</Button>
+                                </Popconfirm>
+                            )}
+                        </Space>
+                    </div>
+                    <Card>
+                        <Table
+                            loading={loadingFirst}
+                            sticky
+                            bordered
+                            size="large"
+                            rowSelection={{
+                                type: "checkbox",
+                                ...rowSelection,
+                            }}
+                            style={{
+                                height: "100",
+                            }}
+                            columns={columns}
+                            dataSource={data}
+                            scroll={{
+                                x: 1200,
+                            }}
+                        />
+                    </Card>
+                </Content>
+
             </>
         </>
     );
