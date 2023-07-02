@@ -1,18 +1,15 @@
-import useCreatePengajarContext from "@/context/useCreatePengajarContext";
+import galleryService from "@/services/gallery.service";
 import kelasService from "@/services/kelas.service";
-import { PlusOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
+import { Breadcrumb, Button, Col, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 Tambah.layout = "L1";
 
-let index = 0;
-
-export default function Tambah() {
+export default function Tambah({ ekstrakurikuler }) {
     const [form] = Form.useForm();
     const [loadingFirst, setLoadingFirst] = useState(true);
     const { push } = useRouter();
@@ -25,9 +22,9 @@ export default function Tambah() {
 
     const onFinish = async (values) => {
         try {
-            const res = await kelasService.create(values);
+            const res = await galleryService.create(values);
             message.success(res.message);
-            push("/kelas");
+            push("/gallery");
         } catch (err) {
             message.success(err.message);
         } finally {
@@ -45,10 +42,10 @@ export default function Tambah() {
     return (
         <>
             <Head>
-                <title>Form Kelas | Sistem Informasi Mutiara</title>
+                <title>Form Gallery | Sistem Informasi Sekolah Mutiara</title>
             </Head>
             <div>
-                <Typography.Title level={2}>Form Pengajar</Typography.Title>
+                <Typography.Title level={2}>Form Gallery</Typography.Title>
                 <div className="my-[25px] flex items-center justify-between">
                     <Breadcrumb
                         items={[
@@ -56,7 +53,7 @@ export default function Tambah() {
                                 title: <Link href="/">Dashboard</Link>,
                             },
                             {
-                                title: <Link href="/pengajar">Kelas</Link>,
+                                title: <Link href="/gallery">Gallery</Link>,
                             },
                             {
                                 title: "Tambah",
@@ -77,23 +74,31 @@ export default function Tambah() {
                             <Row gutter={16}>
                                 <Col span={12}>
                                     <Form.Item
-                                        label="Kelas"
-                                        name="kelas">
+                                        label="Ekstrakurikuler"
+                                        name="ekstrakurikuler">
                                         <Select
-                                            placeholder="Kelas"
-                                            options={[
-                                                { label: "7", value: "7" },
-                                                { label: "8", value: "8" },
-                                                { label: "9", value: "9" },
-                                            ]}
+                                            placeholder="Ekstrakurikuler"
+                                            options={ekstrakurikuler?.data?.map((item) => ({
+                                                label: item?.name,
+                                                value: item?._id,
+                                            }))}
                                         />
                                     </Form.Item>
                                 </Col>
                                 <Col span={12}>
                                     <Form.Item
-                                        label="Nama Lengkap"
-                                        name="name">
-                                        <Input placeholder="Nama Lengkap" />
+                                        label="Title"
+                                        name="description">
+                                        <Input placeholder="Title" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Link Images"
+                                        name="linkGallery">
+                                        <Input placeholder="Link Gallery" />
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -105,7 +110,7 @@ export default function Tambah() {
                                         Submit
                                     </Button>
                                     <Button
-                                        onClick={() => push("/kelas")}
+                                        onClick={() => push("/gallery")}
                                         type="default"
                                         danger
                                         htmlType="button">

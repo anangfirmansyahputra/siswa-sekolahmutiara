@@ -1,7 +1,7 @@
 import kelasService from "@/services/kelas.service";
-import pengajarService from "@/services/pengajar.service";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
+import prestasiService from "@/services/prestasi.service";
+import { DeleteOutlined, DownloadOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, SettingOutlined } from "@ant-design/icons";
+import { Avatar, Breadcrumb, Button, Card, Input, Popconfirm, Space, Typography, message } from "antd";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -11,7 +11,11 @@ import Highlighter from "react-highlight-words";
 
 Prestasi.layout = "L1";
 
-export default function Prestasi({ kelas }) {
+const { Meta } = Card;
+
+export default function Prestasi({ kelas, prestasi }) {
+    console.log(prestasi);
+
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
@@ -130,9 +134,10 @@ export default function Prestasi({ kelas }) {
     });
 
     const confirm = async (record) => {
+        console.log(record);
         try {
             setLoadingFirst(true);
-            const res = await kelasService.delete({ ids: selectedRow });
+            const res = await prestasiService.delete(record);
             message.success(res?.message);
             push(asPath);
         } catch (err) {
@@ -142,42 +147,13 @@ export default function Prestasi({ kelas }) {
         }
     };
 
-    const columns = [
-        {
-            title: "Nama",
-            dataIndex: "name",
-            key: "name",
-            // width: "300px",
-            ...getColumnSearchProps("name"),
-            // fixed: "left",
-            render: (_, record) => (
-                <Link
-                    href={{
-                        pathname: `/kelas/${record?.key}`,
-                    }}>
-                    {record?.name}
-                </Link>
-            ),
-        },
-    ];
-
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRow(selectedRowKeys);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === "Disabled User",
-            name: record.name,
-        }),
-    };
-
     return (
         <>
             <Head>
-                <title>Kelas | Sistem Informasi Mutiara</title>
+                <title>Prestasi | Sistem Informasi Mutiara</title>
             </Head>
             <>
-                <Typography.Title level={2}>Data Kelas</Typography.Title>
+                <Typography.Title level={2}>Data Prestasi</Typography.Title>
                 <div className="my-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
@@ -185,47 +161,62 @@ export default function Prestasi({ kelas }) {
                                 title: <Link href="/">Dashboard</Link>,
                             },
                             {
-                                title: "Kelas",
+                                title: "Prestasi",
                             },
                         ]}
                     />
-                    <Space>
-                        <Link
-                            href={{
-                                pathname: "/kelas/tambah",
-                            }}>
-                            <Button
-                                type="default"
-                                icon={<DeleteOutlined />}>
-                                Tambah
-                            </Button>
-                        </Link>
-                        {selectedRow?.length > 0 && (
-                            <Popconfirm
-                                title="Delete Data"
-                                description="Are you sure to delete this data?"
-                                onConfirm={confirm}
-                                okText="Yes"
-                                cancelText="No">
-                                <Button danger>Delete</Button>
-                            </Popconfirm>
-                        )}
-                    </Space>
+                    <Link
+                        href={{
+                            pathname: "/prestasi/tambah",
+                        }}>
+                        <Button
+                            type="default"
+                            icon={<DeleteOutlined />}>
+                            Tambah
+                        </Button>
+                    </Link>
                 </div>
-                <Table
-                    sticky
-                    bordered
-                    size="large"
-                    rowSelection={{
-                        type: "checkbox",
-                        ...rowSelection,
-                    }}
-                    style={{
-                        height: "100",
-                    }}
-                    columns={columns}
-                    dataSource={data}
-                />
+                <Input style={{ width: 300, marginBottom: 20 }} />
+                <div className="grid grid-cols-4 gap-5">
+                    {prestasi?.data?.map((item) => (
+                        <Card
+                            className="shadow"
+                            cover={
+                                <img
+                                    alt={item?.siswa?.name}
+                                    src={item?.img}
+                                    height={250}
+                                />
+                            }
+                            actions={[
+                                <Link
+                                    target="_blank"
+                                    href={{
+                                        pathname: item?.sertifikat,
+                                    }}>
+                                    <DownloadOutlined key="setting" />
+                                </Link>,
+                                <EditOutlined
+                                    key="edit"
+                                    onClick={() => push(`/prestasi/${item?._id}`)}
+                                />,
+                                <Popconfirm
+                                    title="Delete the task"
+                                    description="Are you sure to delete this task?"
+                                    onConfirm={() => confirm(item?._id)}
+                                    // onCancel={cancel}
+                                    okText="Yes"
+                                    cancelText="No">
+                                    <DeleteOutlined />
+                                </Popconfirm>,
+                            ]}>
+                            <Meta
+                                title={`${item?.deskripsi} (${item?.ekstrakurikuler?.name})`}
+                                description={item?.siswa?.name}
+                            />
+                        </Card>
+                    ))}
+                </div>
             </>
         </>
     );

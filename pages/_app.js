@@ -17,7 +17,7 @@ const layouts = {
     L2: Layout2,
 };
 
-function MyApp({ Component, pageProps, pengajar, ekstrakurikuler, pengumuman, siswa, kelas }) {
+function MyApp({ Component, pageProps, pengajar, ekstrakurikuler, pengumuman, siswa, kelas, gallery, prestasi }) {
     const Layout = layouts[Component.layout] || (({ children }) => <>{children}</>);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -51,7 +51,11 @@ function MyApp({ Component, pageProps, pengajar, ekstrakurikuler, pengumuman, si
                         fontSize: 12,
                     },
                 }}>
-                <Spin spinning={isLoading}>
+                <Spin
+                    spinning={isLoading}
+                    style={{
+                        maxHeight: "100vh",
+                    }}>
                     <Layout
                         isLoading={isLoading}
                         style={{
@@ -64,6 +68,8 @@ function MyApp({ Component, pageProps, pengajar, ekstrakurikuler, pengumuman, si
                             pengumuman={pengumuman}
                             siswa={siswa}
                             kelas={kelas}
+                            gallery={gallery}
+                            prestasi={prestasi}
                         />
                     </Layout>
                 </Spin>
@@ -79,6 +85,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     let siswa = [];
     let pengumuman = [];
     let kelas = [];
+    let gallery = [];
+    let prestasi = [];
 
     try {
         const response = await axios.get("http://localhost:8000/api/admin/pengajar");
@@ -91,8 +99,12 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
         pengumuman = dataPengumuman;
         const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
         kelas = dataKelas;
+        const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
+        gallery = dataGallery;
+        const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
+        prestasi = dataPrestasi;
     } catch (error) {
-        console.error("Failed to fetch pengajar data:", error);
+        console.error(error);
     }
 
     let pageProps = {};
@@ -100,7 +112,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
         pageProps = await Component.getInitialProps(ctx);
     }
 
-    return { pageProps, pengajar, session, ekstrakurikuler, pengumuman, siswa, kelas };
+    return { pageProps, pengajar, session, ekstrakurikuler, pengumuman, siswa, kelas, gallery, prestasi };
 };
 
 export default MyApp;

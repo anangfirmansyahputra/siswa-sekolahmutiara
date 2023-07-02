@@ -1,4 +1,4 @@
-import siswaService from "@/services/siswa.service";
+import galleryService from "@/services/gallery.service";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
 import dayjs from "dayjs";
@@ -9,31 +9,28 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
-Pengajar.layout = "L1";
+Gallery.layout = "L1";
 
-export default function Pengajar({ siswa, kelas }) {
-    const { push, asPath } = useRouter();
-
+export default function Gallery({ gallery }) {
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loadingFirst, setLoadingFirst] = useState(true);
     const [selectedRow, setSelectedRow] = useState([]);
 
     const searchInput = useRef(null);
     const data = [];
+    const { push, asPath } = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
 
-    siswa?.data.map((item) =>
+    gallery?.data.map((item) =>
         data.push({
             key: item._id,
-            nama: item?.name,
-            nis: item?.nis,
-            alamat: item?.alamat,
-            tgl: dayjs(item?.tgl).format("DD/MM/YY"),
-            nilai: item?.nilai,
-            kelas: item?.kelas?.kelas + item?.kelas?.name,
+            description: item?.description,
+            linkGallery: item?.linkGallery,
+            ekstrakurikuler: item?.ekstrakurikuler?.name,
+            tglUpload: dayjs(item?.tglUpload).format("DD/MM/YY"),
         })
     );
 
@@ -135,82 +132,58 @@ export default function Pengajar({ siswa, kelas }) {
             ),
     });
 
-    const config = {
-        headers: { "admin-token": `${token}` },
-    };
-
     const confirm = async (record) => {
         try {
-            setLoading(true);
-            const deleteRes = await siswaService.delete(selectedRow?.map((item) => item?.nis));
-            message.success(deleteRes?.message);
+            setLoadingFirst(true);
+            const res = await galleryService.delete({ ids: selectedRow });
+            message.success(res?.message);
             push(asPath);
         } catch (err) {
-            message.error(err);
+            message.error(err?.message);
         } finally {
-            setLoading(false);
-            setSelectedRow([]);
+            setLoadingFirst(false);
         }
     };
 
     const columns = [
         {
-            title: "Nama",
-            dataIndex: "nama",
-            key: "nama",
-            width: "300px",
-            ...getColumnSearchProps("nama"),
+            title: "Deskripsi",
+            dataIndex: "description",
+            key: "description",
+            ...getColumnSearchProps("description"),
             render: (_, record) => (
                 <Link
                     href={{
-                        pathname: `siswa/${record?.nis}`,
+                        pathname: `/gallery/${record?.key}`,
                     }}>
-                    {record?.nama}
+                    {record?.description}
                 </Link>
             ),
         },
         {
-            title: "NIS",
-            dataIndex: "nis",
-            key: "nis",
-            width: "200px",
-            ...getColumnSearchProps("nis"),
+            title: "Ekstrakurikuler",
+            dataIndex: "ekstrakurikuler",
+            key: "ekstrakurikuler",
+            ...getColumnSearchProps("ekstrakurikuler"),
         },
         {
-            title: "Kelas",
-            dataIndex: "kelas",
-            key: "kelas",
-            ...getColumnSearchProps("kelas"),
-            width: "200px",
+            title: "Tanggal",
+            dataIndex: "tglUpload",
+            key: "tglUpload",
+            ...getColumnSearchProps("tglUpload"),
         },
         {
-            title: "Alamat",
-            dataIndex: "alamat",
-            key: "alamat",
-            ...getColumnSearchProps("alamat"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
-        },
-        {
-            title: "Tanggal Lahir",
-            dataIndex: "tgl",
-            key: "tgl",
-            ...getColumnSearchProps("tgl"),
-            width: "200px",
-        },
-        {
-            title: "Nilai",
-            dataIndex: "nilai",
-            key: "nilai",
-            ...getColumnSearchProps("nilai"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
+            title: "Link",
+            dataIndex: "linkGallery",
+            key: "linkGallery",
+            ...getColumnSearchProps("linkGallery"),
             render: (_, record) => (
                 <Link
+                    target="_blank"
                     href={{
-                        pathname: `nilai/${record?.key}`,
+                        pathname: record?.linkGallery,
                     }}>
-                    Detail
+                    Lihat
                 </Link>
             ),
         },
@@ -218,12 +191,10 @@ export default function Pengajar({ siswa, kelas }) {
 
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-            setSelectedRow(selectedRows);
+            setSelectedRow(selectedRowKeys);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === "Disabled User",
-            // Column configuration not to be checked
             name: record.name,
         }),
     };
@@ -231,10 +202,10 @@ export default function Pengajar({ siswa, kelas }) {
     return (
         <>
             <Head>
-                <title>Siswa | Sistem Informasi Mutiara</title>
+                <title>Gallery | Sistem Informasi Mutiara</title>
             </Head>
-            <div>
-                <Typography.Title level={2}>Data Siswa</Typography.Title>
+            <>
+                <Typography.Title level={2}>Data Gallery</Typography.Title>
                 <div className="my-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
@@ -242,14 +213,14 @@ export default function Pengajar({ siswa, kelas }) {
                                 title: <Link href="/">Dashboard</Link>,
                             },
                             {
-                                title: "Siswa",
+                                title: "Gallery",
                             },
                         ]}
                     />
                     <Space>
                         <Link
                             href={{
-                                pathname: "/siswa/tambah",
+                                pathname: "/gallery/tambah",
                             }}>
                             <Button
                                 type="default"
@@ -282,11 +253,8 @@ export default function Pengajar({ siswa, kelas }) {
                     }}
                     columns={columns}
                     dataSource={data}
-                    scroll={{
-                        x: 1200,
-                    }}
                 />
-            </div>
+            </>
         </>
     );
 }

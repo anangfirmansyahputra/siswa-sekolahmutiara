@@ -1,22 +1,20 @@
-import useCreatePengajarContext from "@/context/useCreatePengajarContext";
 import kelasService from "@/services/kelas.service";
-import { PlusOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
+import { Breadcrumb, Button, Col, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-Tambah.layout = "L1";
+Edit.layout = "L1";
 
-let index = 0;
-
-export default function Tambah() {
+export default function Edit({ kelas }) {
     const [form] = Form.useForm();
-    const [loadingFirst, setLoadingFirst] = useState(true);
-    const { push } = useRouter();
+    const { push, query } = useRouter();
     const { data: session } = useSession();
+
+    const [loadingFirst, setLoadingFirst] = useState(true);
+    const [data, setData] = useState(kelas?.data?.find((item) => item?._id == query?.kelasId));
     const token = session?.user?.user?.accessToken;
 
     const config = {
@@ -24,8 +22,12 @@ export default function Tambah() {
     };
 
     const onFinish = async (values) => {
+        const payload = {
+            name: values.kelas + " " + values.name,
+        };
+
         try {
-            const res = await kelasService.create(values);
+            const res = await kelasService.edit(payload, query.id);
             message.success(res.message);
             push("/kelas");
         } catch (err) {
@@ -41,6 +43,12 @@ export default function Tambah() {
     useEffect(() => {
         setLoadingFirst(false);
     }, []);
+
+    useEffect(() => {
+        if (data) {
+            form.setFieldsValue({ ...data, kelas: data?.kelas });
+        }
+    }, [data]);
 
     return (
         <>
@@ -80,6 +88,7 @@ export default function Tambah() {
                                         label="Kelas"
                                         name="kelas">
                                         <Select
+                                            disabled
                                             placeholder="Kelas"
                                             options={[
                                                 { label: "7", value: "7" },
@@ -105,7 +114,7 @@ export default function Tambah() {
                                         Submit
                                     </Button>
                                     <Button
-                                        onClick={() => push("/kelas")}
+                                        onClick={() => push(`/kelas/${query.id}`)}
                                         type="default"
                                         danger
                                         htmlType="button">

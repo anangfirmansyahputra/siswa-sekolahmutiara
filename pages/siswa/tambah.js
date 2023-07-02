@@ -1,88 +1,28 @@
-import useCreateSiswaContext from "@/context/siswa/useCreateSiswa";
-import { PlusOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography, Upload } from "antd";
+import siswaService from "@/services/siswa.service";
+import { Breadcrumb, Button, Col, DatePicker, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 Page.layout = "L1";
 
-const { RangePicker } = DatePicker;
-
-const inputs = [
-    {
-        id: 1,
-        name: "name",
-        label: "Nama",
-        rules: {
-            required: true,
-            message: "Mohon masukkan nama siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 2,
-        name: "nis",
-        label: "NIS",
-        rules: {
-            required: true,
-            message: "Mohon masukkan NIS siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 3,
-        name: "password",
-        label: "Password",
-        rules: {
-            required: true,
-            message: "Mohon masukkan password siswa",
-        },
-        type: "password",
-    },
-    {
-        id: 4,
-        name: "alamat",
-        label: "Alamat",
-        rules: {
-            required: true,
-            message: "Mohon masukkan alamat siswa",
-        },
-        type: "text",
-    },
-    {
-        id: 5,
-        name: "tgl",
-        label: "Tanggal Lahir",
-        rules: {
-            required: true,
-            message: "Mohon masukkan tanggal lahir siswa",
-        },
-        type: "date",
-    },
-    {
-        id: 6,
-        name: "kelas",
-        label: "Kelas",
-        rules: {
-            required: true,
-            message: "Mohon masukkan kelas",
-        },
-        type: "select",
-    },
-];
-
 export default function Page({ kelas }) {
     const { push } = useRouter();
+    const [form] = Form.useForm();
 
     // useState
-    const [form] = Form.useForm();
-    const { loading, handleCreateSiswa } = useCreateSiswaContext(); // Gunakan hook untuk membuat data siswa
+    const [selectKelas, setSelectKelas] = useState(null);
 
-    const onFinish = (values) => {
-        handleCreateSiswa(values); // Panggil fungsi handleCreateSiswa dengan nilai-nilai form
-        form.resetFields();
+    const onFinish = async (values) => {
+        try {
+            const res = await siswaService.create(values);
+            message.success(res.message);
+            push("/siswa");
+        } catch (err) {
+            message.error(JSON.parse(err?.request?.response)?.message);
+        } finally {
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -159,12 +99,57 @@ export default function Page({ kelas }) {
                                 </Col>
                             </Row>
                             <Row gutter={16}>
-                                <Col span={24}>
+                                <Col span={12}>
                                     <Form.Item
                                         label="Alamat"
                                         name="alamat">
                                         <Input placeholder="Alamat" />
                                     </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Row gutter={16}>
+                                        <Col span={12}>
+                                            <Form.Item label="Kelas">
+                                                <Select
+                                                    onChange={(value) => {
+                                                        form.setFieldsValue({ kelas: undefined });
+                                                        setSelectKelas(value);
+                                                    }}
+                                                    placeholder="Kelas"
+                                                    options={[
+                                                        {
+                                                            label: 7,
+                                                            value: 7,
+                                                        },
+                                                        {
+                                                            label: 8,
+                                                            value: 8,
+                                                        },
+                                                        {
+                                                            label: 9,
+                                                            value: 9,
+                                                        },
+                                                    ]}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item
+                                                label="Nama Kelas"
+                                                name="kelas">
+                                                <Select
+                                                    disabled={selectKelas === null}
+                                                    placeholder="Nama Kelas"
+                                                    options={kelas?.data
+                                                        ?.filter((item) => item?.kelas == selectKelas)
+                                                        ?.map((item) => ({
+                                                            label: item?.name,
+                                                            value: item?._id,
+                                                        }))}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
                                 </Col>
                             </Row>
 

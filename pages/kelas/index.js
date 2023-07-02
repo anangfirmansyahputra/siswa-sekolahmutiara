@@ -19,17 +19,27 @@ export default function Kelas({ kelas }) {
     const [selectedRow, setSelectedRow] = useState([]);
 
     const searchInput = useRef(null);
-    const data = [];
+    const data = [
+        {
+            key: 7,
+            kelas: 7,
+            jumlah: kelas?.data?.filter((item) => item?.kelas === "7")?.length,
+        },
+        {
+            key: 8,
+            kelas: 8,
+            jumlah: kelas?.data?.filter((item) => item?.kelas === "8")?.length,
+        },
+        {
+            key: 9,
+            kelas: 9,
+            jumlah: kelas?.data?.filter((item) => item?.kelas === "9")?.length,
+        },
+    ];
+
     const { push, asPath } = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
-
-    kelas?.data.map((item) =>
-        data.push({
-            key: item._id,
-            name: item?.name,
-        })
-    );
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -144,20 +154,28 @@ export default function Kelas({ kelas }) {
 
     const columns = [
         {
-            title: "Nama",
-            dataIndex: "name",
-            key: "name",
+            title: "Kelas",
+            dataIndex: "kelas",
+            key: "kelas",
             // width: "300px",
-            ...getColumnSearchProps("name"),
+            ...getColumnSearchProps("kelas"),
             // fixed: "left",
             render: (_, record) => (
                 <Link
                     href={{
                         pathname: `/kelas/${record?.key}`,
                     }}>
-                    {record?.name}
+                    {record?.kelas}
                 </Link>
             ),
+        },
+        {
+            title: "Jumlah Kelas",
+            dataIndex: "jumlah",
+            key: "jumlah",
+            // width: "300px",
+            ...getColumnSearchProps("jumlah"),
+            // fixed: "left",
         },
     ];
 
@@ -200,16 +218,6 @@ export default function Kelas({ kelas }) {
                                 Tambah
                             </Button>
                         </Link>
-                        {selectedRow?.length > 0 && (
-                            <Popconfirm
-                                title="Delete Data"
-                                description="Are you sure to delete this data?"
-                                onConfirm={confirm}
-                                okText="Yes"
-                                cancelText="No">
-                                <Button danger>Delete</Button>
-                            </Popconfirm>
-                        )}
                     </Space>
                 </div>
                 <Table

@@ -38,8 +38,6 @@ export default function Pengajar({ pengajar }) {
         })
     );
 
-    console.log(pengajar?.data?.map((item) => item?.ekstrakurikuler?.map((obj) => obj.name).join(", ")));
-
     useEffect(() => {
         setLoadingFirst(false);
     }, []);

@@ -1,6 +1,7 @@
-import siswaService from "@/services/siswa.service";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
+import ekstrakurikulerService from "@/services/ekstrakurikuler.service";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Alert, Breadcrumb, Button, Card, Input, Layout, Popconfirm, Space, Table, Typography, message } from "antd";
+import axios from "axios";
 import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
@@ -8,33 +9,34 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import Swal from "sweetalert2";
 
-Pengajar.layout = "L1";
+Absensi.layout = "L1";
+const { Content } = Layout
 
-export default function Pengajar({ siswa, kelas }) {
-    const { push, asPath } = useRouter();
-
+export default function Absensi({ ekstrakurikuler }) {
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
-
     const searchInput = useRef(null);
     const data = [];
+    const router = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
 
-    siswa?.data.map((item) =>
-        data.push({
-            key: item._id,
-            nama: item?.name,
-            nis: item?.nis,
-            alamat: item?.alamat,
-            tgl: dayjs(item?.tgl).format("DD/MM/YY"),
-            nilai: item?.nilai,
-            kelas: item?.kelas?.kelas + item?.kelas?.name,
-        })
+    ekstrakurikuler?.data.map(
+        (item) =>
+            item?.approve &&
+            data.push({
+                key: item._id,
+                name: item?.name,
+                kehadiran: item?.kehadiran,
+                pertemuan: item?.pertemuan,
+                lokasi: item?.lokasi,
+                waktu: item?.waktu?.map((item) => dayjs(item).format("HH:mm")).join(" - "),
+                hari: item?.hari?.charAt(0).toUpperCase() + item?.hari?.slice(1),
+                wajib: item?.wajib === true ? "Wajib" : "Pilihan",
+            })
     );
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -139,154 +141,116 @@ export default function Pengajar({ siswa, kelas }) {
         headers: { "admin-token": `${token}` },
     };
 
-    const confirm = async (record) => {
-        try {
-            setLoading(true);
-            const deleteRes = await siswaService.delete(selectedRow?.map((item) => item?.nis));
-            message.success(deleteRes?.message);
-            push(asPath);
-        } catch (err) {
-            message.error(err);
-        } finally {
-            setLoading(false);
-            setSelectedRow([]);
-        }
-    };
-
     const columns = [
         {
             title: "Nama",
-            dataIndex: "nama",
-            key: "nama",
-            width: "300px",
-            ...getColumnSearchProps("nama"),
+            dataIndex: "name",
+            key: "name",
+            width: "fit",
+            ...getColumnSearchProps("name"),
+            // fixed: "left",
             render: (_, record) => (
                 <Link
                     href={{
-                        pathname: `siswa/${record?.nis}`,
+                        pathname: `/absensi/${record?.key}`,
                     }}>
-                    {record?.nama}
+                    {record?.name}
                 </Link>
             ),
         },
         {
-            title: "NIS",
-            dataIndex: "nis",
-            key: "nis",
-            width: "200px",
-            ...getColumnSearchProps("nis"),
+            title: "Jumlah Pertemuan",
+            dataIndex: "kehadiran",
+            key: "kehadiran",
+            // width: "10px",
+            ...getColumnSearchProps("kehadiran"),
+            // render: (_, record) => {
+            //     return (
+            //         <Button
+            //             type="link"
+            //             onClick={() => router.push(`/absensi/${record?.key}`)}>
+            //             {record?.pertemuan}/{record?.kehadiran}
+            //         </Button>
+            //     );
+            // },
         },
         {
-            title: "Kelas",
-            dataIndex: "kelas",
-            key: "kelas",
-            ...getColumnSearchProps("kelas"),
-            width: "200px",
-        },
-        {
-            title: "Alamat",
-            dataIndex: "alamat",
-            key: "alamat",
-            ...getColumnSearchProps("alamat"),
+            title: "Lokasi",
+            dataIndex: "lokasi",
+            key: "lokasi",
+            ...getColumnSearchProps("lokasi"),
             sortDirections: ["descend", "ascend"],
-            width: "200px",
         },
         {
-            title: "Tanggal Lahir",
-            dataIndex: "tgl",
-            key: "tgl",
-            ...getColumnSearchProps("tgl"),
-            width: "200px",
+            title: "Waktu",
+            dataIndex: "waktu",
+            key: "waktu",
+            ...getColumnSearchProps("waktu"),
         },
         {
-            title: "Nilai",
-            dataIndex: "nilai",
-            key: "nilai",
-            ...getColumnSearchProps("nilai"),
+            title: "Hari",
+            dataIndex: "hari",
+            key: "hari",
+            ...getColumnSearchProps("hari"),
+        },
+        {
+            title: "Status",
+            dataIndex: "wajib",
+            key: "wajib",
+            ...getColumnSearchProps("wajib"),
             sortDirections: ["descend", "ascend"],
-            width: "200px",
-            render: (_, record) => (
-                <Link
-                    href={{
-                        pathname: `nilai/${record?.key}`,
-                    }}>
-                    Detail
-                </Link>
-            ),
+            render: (_, record) => <div className={`w-fit ${record?.wajib === "Wajib" ? "bg-green-300" : "bg-yellow-300"} rounded px-5 py-1 `}>{record?.wajib}</div>,
         },
     ];
 
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-            setSelectedRow(selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === "Disabled User",
-            // Column configuration not to be checked
-            name: record.name,
-        }),
-    };
 
     return (
         <>
             <Head>
-                <title>Siswa | Sistem Informasi Mutiara</title>
+                <title>Absensi | Sistem Informasi Mutiara</title>
             </Head>
-            <div>
-                <Typography.Title level={2}>Data Siswa</Typography.Title>
-                <div className="my-5 flex items-center justify-between">
-                    <Breadcrumb
-                        items={[
+            <Content style={{ margin: "0 16px" }}>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <Typography.Title
+                            level={3}
+                            style={{ marginBottom: "0" }}>
+                            Absensi
+                        </Typography.Title>
+                        <Breadcrumb style={{ margin: "0 0 16px" }} items={[
                             {
-                                title: <Link href="/">Dashboard</Link>,
+                                title: <Link href={{
+                                    pathname: "/dashboard"
+                                }}>Dashboard</Link>
                             },
                             {
-                                title: "Siswa",
-                            },
-                        ]}
-                    />
-                    <Space>
-                        <Link
-                            href={{
-                                pathname: "/siswa/tambah",
-                            }}>
-                            <Button
-                                type="default"
-                                icon={<DeleteOutlined />}>
-                                Tambah
-                            </Button>
-                        </Link>
-                        {selectedRow?.length > 0 && (
-                            <Popconfirm
-                                title="Delete Data"
-                                description="Are you sure to delete this data?"
-                                onConfirm={confirm}
-                                okText="Yes"
-                                cancelText="No">
-                                <Button danger>Delete</Button>
-                            </Popconfirm>
-                        )}
-                    </Space>
+                                title: "Absensi"
+                            }
+                        ]} />
+                    </div>
                 </div>
-                <Table
-                    sticky
-                    bordered
-                    size="large"
-                    rowSelection={{
-                        type: "checkbox",
-                        ...rowSelection,
-                    }}
-                    style={{
-                        height: "100",
-                    }}
-                    columns={columns}
-                    dataSource={data}
-                    scroll={{
-                        x: 1200,
-                    }}
-                />
-            </div>
+                <Card>
+                    <Table
+                        bordered
+                        size="large"
+                        // rowSelection={{
+                        //     type: "checkbox",
+                        //     ...rowSelection,
+                        // }}
+                        style={{
+                            height: "100",
+                            marginTop: 10,
+                        }}
+                        columns={columns}
+                        dataSource={data}
+                        scroll={{
+                            x: "fit",
+                        }}
+                    />
+                </Card>
+
+            </Content>
+
         </>
     );
 }
@@ -303,7 +267,10 @@ export async function getServerSideProps(ctx) {
             props: {},
         };
     }
+
     return {
-        props: {},
+        props: {
+            // ekstrakurikuler: data,
+        },
     };
 }

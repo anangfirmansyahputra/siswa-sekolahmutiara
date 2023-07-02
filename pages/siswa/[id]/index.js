@@ -1,5 +1,5 @@
 import siswaService from "@/services/siswa.service";
-import { Breadcrumb, Button, Col, DatePicker, Form, Input, Row, Space, Spin, Typography, message } from "antd";
+import { Breadcrumb, Button, Col, DatePicker, Form, Input, Row, Select, Space, Spin, Typography, message } from "antd";
 import dayjs from "dayjs";
 import Head from "next/head";
 import Link from "next/link";
@@ -108,11 +108,24 @@ export default function Page({ kelas, siswa }) {
                                 </Col>
                             </Row>
                             <Row gutter={16}>
-                                <Col span={24}>
+                                <Col span={12}>
                                     <Form.Item
                                         label="Alamat"
                                         name="alamat">
                                         <Input placeholder="Alamat" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Kelas"
+                                        name="kelas">
+                                        <Select
+                                            placeholder="Kelas"
+                                            options={kelas?.data?.map((item) => ({
+                                                label: item?.name,
+                                                value: item?.name,
+                                            }))}
+                                        />
                                     </Form.Item>
                                 </Col>
                             </Row>
