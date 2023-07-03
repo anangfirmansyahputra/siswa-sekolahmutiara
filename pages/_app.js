@@ -89,20 +89,20 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     let prestasi = [];
 
     try {
-        const response = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengajar");
-        pengajar = response.data;
-        const { data } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/pengajar/ekstrakurikuler");
-        ekstrakurikuler = data;
-        const { data: dataSiswa } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa");
-        siswa = dataSiswa;
-        const { data: dataPengumuman } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengumuman");
-        pengumuman = dataPengumuman;
-        const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
-        kelas = dataKelas;
-        const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
-        gallery = dataGallery;
-        const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
-        prestasi = dataPrestasi;
+        // const response = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengajar");
+        // pengajar = response.data;
+        // const { data } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/pengajar/ekstrakurikuler");
+        // ekstrakurikuler = data;
+        // const { data: dataSiswa } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa");
+        // siswa = dataSiswa;
+        // const { data: dataPengumuman } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengumuman");
+        // pengumuman = dataPengumuman;
+        // const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
+        // kelas = dataKelas;
+        // const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
+        // gallery = dataGallery;
+        // const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
+        // prestasi = dataPrestasi;
     } catch (error) {
         console.error(error);
     }
