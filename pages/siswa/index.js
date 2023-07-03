@@ -2,12 +2,13 @@ import siswaService from "@/services/siswa.service";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Input, Popconfirm, Space, Table, Typography, message } from "antd";
 import dayjs from "dayjs";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import http from '@/plugin/https'
 
 Pengajar.layout = "L1";
 
@@ -292,18 +293,23 @@ export default function Pengajar({ siswa, kelas }) {
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/kelas')
+    const { data: siswa } = await http.get('/siswa')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
     return {
-        props: {},
+        props: {
+            kelas: data,
+            siswa: siswa,
+        },
     };
 }
+

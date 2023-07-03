@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { Input } from "postcss";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import http from '@/plugin/https';
 
 Pendaftar.layout = "L1";
 
@@ -196,4 +197,23 @@ export default function Pendaftar({ ekstrakurikuler }) {
             </Card>
         </div>
     );
+}
+
+export async function getServerSideProps(ctx) {
+    const { data: ekstrakurikuler } = await http.get('/pengajar/ekstrakurikuler')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            ekstrakurikuler: ekstrakurikuler
+        },
+    };
 }

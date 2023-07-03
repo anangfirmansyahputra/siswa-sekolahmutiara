@@ -1,13 +1,12 @@
-import useCreatePengajarContext from "@/context/useCreatePengajarContext";
-import kelasService from "@/services/kelas.service";
 import prestasiService from "@/services/prestasi.service";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography, Upload, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Col, DatePicker, Form, Input, Row, Select, Space, Spin, Typography, Upload, message } from "antd";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import http from '@/plugin/https'
 
 Tambah.layout = "L1";
 
@@ -258,3 +257,28 @@ export default function Tambah({ ekstrakurikuler, siswa, kelas }) {
         </>
     );
 }
+
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/kelas')
+    const { data: siswa } = await http.get('/siswa')
+    const { data: ekstrakurikuler } = await http.get('/pengajar/ekstrakurikuler')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            kelas: data,
+            siswa: siswa,
+            ekstrakurikuler: ekstrakurikuler
+        },
+    };
+}
+

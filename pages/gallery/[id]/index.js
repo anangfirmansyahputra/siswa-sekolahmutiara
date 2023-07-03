@@ -6,6 +6,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import http from '@/plugin/https'
 
 Edit.layout = "L1";
 
@@ -134,4 +135,25 @@ export default function Edit({ ekstrakurikuler, gallery }) {
             </div>
         </>
     );
+}
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/pengajar/ekstrakurikuler')
+    const { data: gallery } = await http.get('/gallery')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            ekstrakurikuler: data,
+            gallery: gallery
+        },
+    };
 }

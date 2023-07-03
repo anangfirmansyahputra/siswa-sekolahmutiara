@@ -10,13 +10,13 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import Swal from "sweetalert2";
+import http from '@/plugin/https'
 
 Ekstrakurikuler.layout = "L1";
 
 export default function Ekstrakurikuler({ ekstrakurikuler }) {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
-    const { handleDelete } = useDeleteEkstra();
     const searchInput = useRef(null);
     const [pending, setPending] = useState(ekstrakurikuler?.data?.filter((item) => item?.approve === false));
     const [showPending, setShowPending] = useState(false);
@@ -24,9 +24,6 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
     const router = useRouter();
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
-    const role = session?.user?.user?.role;
-
-    console.log(ekstrakurikuler?.data[0]?.waktu?.map((item) => dayjs(item).format("HH:mm")).join(" - "));
 
     ekstrakurikuler?.data.map(
         (item) =>
@@ -370,6 +367,7 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
 
 export async function getServerSideProps(ctx) {
     const session = await getSession(ctx);
+    const { data } = await http.get('/pengajar/ekstrakurikuler')
 
     if (!session) {
         return {
@@ -383,7 +381,7 @@ export async function getServerSideProps(ctx) {
 
     return {
         props: {
-            // ekstrakurikuler: data,
+            ekstrakurikuler: data
         },
     };
 }

@@ -4,6 +4,7 @@ import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
+import http from '@/plugin/https'
 
 Ekstrakurikuler.layout = "L1";
 
@@ -122,19 +123,21 @@ export default function Ekstrakurikuler({ ekstrakurikuler }) {
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/pengajar/ekstrakurikuler')
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
     return {
-        props: {},
+        props: {
+            ekstrakurikuler: data
+        },
     };
 }

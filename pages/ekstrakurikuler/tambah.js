@@ -1,10 +1,10 @@
 import useCreateEktrakurikuler from "@/context/ektrakurikuler/useCreateEktrakurikuler";
-import { PlusOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Space, Spin, Switch, TimePicker, Typography } from "antd";
+import http from '@/plugin/https';
+import { Breadcrumb, Button, Col, DatePicker, Form, Input, InputNumber, Row, Select, Space, Spin, Switch, TimePicker, Typography } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const normFile = (e) => {
@@ -248,4 +248,24 @@ export default function Tambah({ pengajar }) {
             </div>
         </div>
     );
+}
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/admin/pengajar')
+
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            pengajar: data
+        },
+    };
 }

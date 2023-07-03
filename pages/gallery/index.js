@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import http from '@/plugin/https'
 
 Gallery.layout = "L1";
 
@@ -260,18 +261,20 @@ export default function Gallery({ gallery }) {
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/gallery')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
     return {
-        props: {},
+        props: {
+            gallery: data,
+        },
     };
 }

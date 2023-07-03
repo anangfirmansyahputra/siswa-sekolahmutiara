@@ -1,11 +1,11 @@
-import useDeleteEkstra from "@/context/ektrakurikuler/useDeleteEkstra";
 import useUpdateEkstra from "@/context/ektrakurikuler/useUpdateEkstra";
-import { Breadcrumb, Typography, Button, Col, Form, Input, InputNumber, Popconfirm, Row, Select, Space, Spin, Switch, TimePicker } from "antd";
+import http from '@/plugin/https';
+import { Breadcrumb, Button, Col, Form, Input, InputNumber, Row, Select, Space, Spin, Switch, TimePicker, Typography } from "antd";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 const { TextArea } = Input;
 
 Tambah.layout = "L1";
@@ -196,4 +196,25 @@ export default function Tambah({ ekstrakurikuler, pengajar }) {
             </div>
         </div>
     );
+}
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/admin/pengajar')
+    const { data: ekstrakurikuler } = await http.get('/pengajar/ekstrakurikuler')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            pengajar: data,
+            ekstrakurikuler: ekstrakurikuler
+        },
+    };
 }

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { Input } from "postcss";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import http from '@/plugin/https'
 
 Page.layout = "L1";
 
@@ -258,3 +259,23 @@ export default function Page({ pengumuman }) {
         </div>
     );
 }
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/admin/pengumuman')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            pengumuman: data,
+        },
+    };
+}
+

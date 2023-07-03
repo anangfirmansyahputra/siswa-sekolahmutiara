@@ -5,6 +5,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import http from '@/plugin/https'
 
 Page.layout = "L1";
 
@@ -153,3 +154,25 @@ export default function Page({ kelas, siswa }) {
         </>
     );
 }
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/kelas')
+    const { data: siswa } = await http.get('/siswa')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            kelas: data,
+            siswa: siswa,
+        },
+    };
+}
+

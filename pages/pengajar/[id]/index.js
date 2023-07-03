@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/id";
 import useUpdatePengajar from "@/context/pengajar/useUpdatePengajar";
 import Head from "next/head";
+import http from '@/plugin/https'
 
 dayjs.locale("id");
 
@@ -337,3 +338,23 @@ export default function Edit({ pengajar }) {
         </>
     );
 }
+
+export async function getServerSideProps(ctx) {
+    const { data } = await http.get('/admin/pengajar')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+
+    return {
+        props: {
+            pengajar: data,
+        },
+    };
+}
+

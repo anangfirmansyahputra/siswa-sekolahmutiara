@@ -1,11 +1,10 @@
-import AddDelete from "@/components/AddDelete";
-import useDeleteSiswaContext from "@/context/siswa/useDeleteSiswa";
 import useDeletePengajarContext from "@/context/useDeletePengajarContext";
+import http from '@/plugin/https';
 import pengajarService from "@/services/pengajar.service";
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Card, Input, Layout, Popconfirm, Space, Spin, Table, Typography, message } from "antd";
+import { DeleteOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Card, Input, Layout, Popconfirm, Space, Table, Typography, message } from "antd";
 import dayjs from "dayjs";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -309,18 +308,20 @@ export default function Pengajar({ pengajar }) {
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/admin/pengajar')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
     return {
-        props: {},
+        props: {
+            pengajar: data,
+        },
     };
 }

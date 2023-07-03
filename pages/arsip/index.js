@@ -19,17 +19,6 @@ export default function Page() {
     const { data: session } = useSession();
     const token = session?.user?.user?.accessToken;
 
-    // pengumuman?.data.map((item) =>
-    //     data.push({
-    //         key: item._id,
-    //         title: item?.title,
-    //         content: item?.content,
-    //         for: item?.for,
-    //         timeEnd: item?.timeEnd,
-    //         timeStart: item?.timeStart,
-    //     })
-    // );
-
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         setSearchText(selectedKeys[0]);

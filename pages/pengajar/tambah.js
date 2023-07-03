@@ -1,4 +1,5 @@
 import useCreatePengajarContext from "@/context/useCreatePengajarContext";
+import matpelService from "@/services/matpel.service";
 import { PlusOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Space, Spin, Typography } from "antd";
 import { useSession } from "next-auth/react";
@@ -11,7 +12,7 @@ Tambah.layout = "L1";
 
 let index = 0;
 
-export default function Tambah() {
+export default function Tambah({ matpel }) {
     const [form] = Form.useForm();
     const [loadingFirst, setLoadingFirst] = useState(true);
     const { push } = useRouter();
@@ -134,36 +135,36 @@ export default function Tambah() {
                                                 width: "100%",
                                             }}
                                             placeholder="Mengajar"
-                                            dropdownRender={(menu) => (
-                                                <>
-                                                    {menu}
-                                                    <Divider
-                                                        style={{
-                                                            margin: "8px 0",
-                                                        }}
-                                                    />
-                                                    <Space
-                                                        style={{
-                                                            padding: "0 8px 4px",
-                                                        }}>
-                                                        <Input
-                                                            placeholder="Please enter item"
-                                                            ref={inputRef}
-                                                            value={name}
-                                                            onChange={onNameChange}
-                                                        />
-                                                        <Button
-                                                            type="text"
-                                                            icon={<PlusOutlined />}
-                                                            onClick={addItem}>
-                                                            Add item
-                                                        </Button>
-                                                    </Space>
-                                                </>
-                                            )}
-                                            options={items.map((item) => ({
-                                                label: item,
-                                                value: item,
+                                            // dropdownRender={(menu) => (
+                                            //     <>
+                                            //         {menu}
+                                            //         <Divider
+                                            //             style={{
+                                            //                 margin: "8px 0",
+                                            //             }}
+                                            //         />
+                                            //         <Space
+                                            //             style={{
+                                            //                 padding: "0 8px 4px",
+                                            //             }}>
+                                            //             <Input
+                                            //                 placeholder="Please enter item"
+                                            //                 ref={inputRef}
+                                            //                 value={name}
+                                            //                 onChange={onNameChange}
+                                            //             />
+                                            //             <Button
+                                            //                 type="text"
+                                            //                 icon={<PlusOutlined />}
+                                            //                 onClick={addItem}>
+                                            //                 Add item
+                                            //             </Button>
+                                            //         </Space>
+                                            //     </>
+                                            // )}
+                                            options={matpel?.data?.map((item) => ({
+                                                label: item.name,
+                                                value: item._id,
                                             }))}
                                         />
                                     </Form.Item>
@@ -221,3 +222,24 @@ export default function Tambah() {
         </>
     );
 }
+
+export async function getServerSideProps(ctx) {
+    // const session = await getSession(ctx);
+    const matpel = await matpelService.get()
+
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
+    return {
+        props: {
+            matpel: matpel
+        },
+    };
+}
+

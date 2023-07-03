@@ -5,6 +5,7 @@ import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import http from '@/plugin/https'
 
 Dashboard.layout = "L1";
 
@@ -103,18 +104,27 @@ export default function Dashboard({ pengajar, siswa, ekstrakurikuler, pengumuman
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/pengajar/ekstrakurikuler')
+    const { data: siswa } = await http.get('/siswa')
+    const { data: pengajar } = await http.get('/admin/pengajar')
+    const { data: pengumuman } = await http.get('/admin/pengumuman')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
     return {
-        props: {},
+        props: {
+            ekstrakurikuler: data,
+            siswa: siswa,
+            pengajar: pengajar,
+            pengumuman: pengumuman,
+        },
     };
 }
+

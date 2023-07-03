@@ -1,21 +1,20 @@
-import kelasService from "@/services/kelas.service";
 import prestasiService from "@/services/prestasi.service";
-import { DeleteOutlined, DownloadOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, SettingOutlined } from "@ant-design/icons";
-import { Avatar, Breadcrumb, Button, Card, Input, Popconfirm, Space, Typography, message } from "antd";
-import { getSession, useSession } from "next-auth/react";
+import { DeleteOutlined, DownloadOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Card, Input, Popconfirm, Space, Typography, message } from "antd";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import http from '@/plugin/https'
+
 
 Prestasi.layout = "L1";
 
 const { Meta } = Card;
 
 export default function Prestasi({ kelas, prestasi }) {
-    console.log(prestasi);
-
     // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
@@ -223,18 +222,23 @@ export default function Prestasi({ kelas, prestasi }) {
 }
 
 export async function getServerSideProps(ctx) {
-    const session = await getSession(ctx);
+    const { data } = await http.get('/kelas')
+    const { data: prestasi } = await http.get('/prestasi')
+    // if (!session) {
+    //     return {
+    //         redirect: {
+    //             permanent: false,
+    //             destination: "/login",
+    //         },
+    //         props: {},
+    //     };
+    // }
 
-    if (!session) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: "/login",
-            },
-            props: {},
-        };
-    }
     return {
-        props: {},
+        props: {
+            kelas: data,
+            prestasi: prestasi
+        },
     };
 }
+
