@@ -108,6 +108,7 @@ export async function getServerSideProps(ctx) {
     const { data: siswa } = await http.get('/siswa')
     const { data: pengajar } = await http.get('/admin/pengajar')
     const { data: pengumuman } = await http.get('/admin/pengumuman')
+
     // if (!session) {
     //     return {
     //         redirect: {

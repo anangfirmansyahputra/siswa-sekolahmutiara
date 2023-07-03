@@ -17,7 +17,7 @@ const layouts = {
     L2: Layout2,
 };
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps, pengajar, pengumuman, siswa, kelas, gallery, prestasi }) {
     const Layout = layouts[Component.layout] || (({ children }) => <>{children}</>);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -78,41 +78,41 @@ function MyApp({ Component, pageProps }) {
     );
 }
 
-// MyApp.getInitialProps = async ({ Component, ctx }) => {
-//     const session = await getSession(ctx);
-//     let pengajar = [];
-//     let ekstrakurikuler = [];
-//     let siswa = [];
-//     let pengumuman = [];
-//     let kelas = [];
-//     let gallery = [];
-//     let prestasi = [];
+MyApp.getInitialProps = async ({ Component, ctx }) => {
+    const session = await getSession(ctx);
+    let pengajar = [];
+    let ekstrakurikuler = [];
+    let siswa = [];
+    let pengumuman = [];
+    let kelas = [];
+    let gallery = [];
+    let prestasi = [];
 
-//     try {
-//         // const response = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengajar");
-//         // pengajar = response.data;
-//         // const { data } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/pengajar/ekstrakurikuler");
-//         // ekstrakurikuler = data;
-//         // const { data: dataSiswa } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa");
-//         // siswa = dataSiswa;
-//         // const { data: dataPengumuman } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengumuman");
-//         // pengumuman = dataPengumuman;
-//         // const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
-//         // kelas = dataKelas;
-//         // const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
-//         // gallery = dataGallery;
-//         // const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
-//         // prestasi = dataPrestasi;
-//     } catch (error) {
-//         console.error(error);
-//     }
+    try {
+        // const response = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengajar");
+        // pengajar = response.data;
+        // const { data } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/pengajar/ekstrakurikuler");
+        // ekstrakurikuler = data;
+        // const { data: dataSiswa } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa");
+        // siswa = dataSiswa;
+        // const { data: dataPengumuman } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/pengumuman");
+        // pengumuman = dataPengumuman;
+        // const { data: dataKelas } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/kelas");
+        // kelas = dataKelas;
+        // const { data: dataGallery } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/gallery/");
+        // gallery = dataGallery;
+        // const { data: dataPrestasi } = await axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/prestasi/");
+        // prestasi = dataPrestasi;
+    } catch (error) {
+        console.error(error);
+    }
 
-//     let pageProps = {};
-//     if (Component.getInitialProps) {
-//         pageProps = await Component.getInitialProps(ctx);
-//     }
+    let pageProps = {};
+    if (Component.getInitialProps) {
+        pageProps = await Component.getInitialProps(ctx);
+    }
 
-//     return { pageProps, session, pengumuman, siswa, kelas, gallery, prestasi };
-// };
+    return { pageProps, session, pengumuman, siswa, kelas, gallery, prestasi };
+};
 
 export default MyApp;
