@@ -1,32 +1,31 @@
-import AddDelete from "@/components/AddDelete";
-import { SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Popconfirm, Space, Table } from "antd";
-import { useSession } from "next-auth/react";
+import http from '@/plugin/https';
+import galleryService from "@/services/gallery.service";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Card, Input, Popconfirm, Space, Table, Typography, message } from "antd";
+import dayjs from "dayjs";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Input } from "postcss";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import http from '@/plugin/https'
 
-Page.layout = "L1";
-
-export default function Page({ pengumuman }) {
+export default function Gallery({ gallery }) {
+    // State
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
+    const [loadingFirst, setLoadingFirst] = useState(true);
+    const [selectedRow, setSelectedRow] = useState([]);
+
     const searchInput = useRef(null);
-    const router = useRouter();
     const data = [];
-    const { data: session } = useSession();
-    const token = session?.user?.user?.accessToken;
-    pengumuman?.data.map((item) =>
+
+    gallery?.data.map((item) =>
         data.push({
             key: item._id,
-            title: item?.title,
-            content: item?.content,
-            for: item?.for,
-            timeEnd: item?.timeEnd,
-            timeStart: item?.timeStart,
+            description: item?.description,
+            linkGallery: item?.linkGallery,
+            ekstrakurikuler: item?.ekstrakurikuler?.name,
+            tglUpload: dayjs(item?.tglUpload).format("DD/MM/YY"),
         })
     );
 
@@ -39,7 +38,6 @@ export default function Page({ pengumuman }) {
         clearFilters();
         setSearchText("");
     };
-
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div
@@ -129,153 +127,98 @@ export default function Page({ pengumuman }) {
             ),
     });
 
-    const config = {
-        headers: { "admin-token": `${token}` },
-    };
-
-    const confirm = (record) => {
-        // handleDelete()
-        const data = [];
-        data.push(record?.nik);
-        // console.log("record:", record);
-        handleDelete(data, config)
-            .then(message.success("Click on Yes"))
-            .catch((err) => console.log(err));
-    };
-
-    const cancel = (e) => {
-        console.log(e);
-        message.error("Click on No");
-    };
-
     const columns = [
         {
-            title: "Title",
-            dataIndex: "title",
-            key: "title",
-            width: "300px",
-            ...getColumnSearchProps("title"),
-            fixed: "left",
+            title: "Deskripsi",
+            dataIndex: "description",
+            key: "description",
+            ...getColumnSearchProps("description"),
         },
         {
-            title: "Untuk",
-            dataIndex: "for",
-            key: "for",
-            width: "200px",
-            ...getColumnSearchProps("for"),
+            title: "Ekstrakurikuler",
+            dataIndex: "ekstrakurikuler",
+            key: "ekstrakurikuler",
+            ...getColumnSearchProps("ekstrakurikuler"),
         },
         {
-            title: "Time Start",
-            dataIndex: "timeStart",
-            key: "timeStart",
-            ...getColumnSearchProps("timeStart"),
-            sortDirections: ["descend", "ascend"],
-            width: "200px",
+            title: "Tanggal",
+            dataIndex: "tglUpload",
+            key: "tglUpload",
+            ...getColumnSearchProps("tglUpload"),
         },
         {
-            title: "Time End",
-            dataIndex: "timeEnd",
-            key: "timeEnd",
-            ...getColumnSearchProps("timeEnd"),
-            width: "200px",
-        },
-
-        {
-            title: "Edit",
-            dataIndex: "edit",
-            fixed: "right",
-            width: "200px",
+            title: "Link",
+            dataIndex: "linkGallery",
+            key: "linkGallery",
+            width: 100,
+            ...getColumnSearchProps("linkGallery"),
             render: (_, record) => (
-                <Space>
-                    <Popconfirm
-                        title="Yakin ingin menghapus?"
-                        onConfirm={() => confirm(record)}
-                        onCancel={cancel}>
-                        <Button
-                            type="primary"
-                            danger>
-                            Delete
-                        </Button>
-                    </Popconfirm>
-                    <Button
-                        type="primary"
-                        onClick={() => router.push("/pengumuman/tambah")}>
-                        Edit
-                    </Button>
-                </Space>
+                <Link
+                    target="_blank"
+                    href={{
+                        pathname: record?.linkGallery,
+                    }}>
+                    Lihat
+                </Link>
             ),
+            fixed: 'right'
         },
     ];
 
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
             setSelectedRow(selectedRowKeys);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === "Disabled User",
-            // Column configuration not to be checked
             name: record.name,
         }),
     };
 
-    const [selectedRow, setSelectedRow] = useState([]);
-
     return (
-        <div>
-            <div className="my-5 flex items-center justify-between">
-                <Breadcrumb
-                    items={[
-                        {
-                            title: <Link href="/">Dashboard</Link>,
-                        },
-                        {
-                            title: "Pengumuman",
-                        },
-                    ]}
-                />
-                <AddDelete
-                    link={"/pengumuman/tambah"}
-                    text="Tambah"
-                />
-            </div>
-            <Table
-                sticky
-                bordered
-                size="large"
-                rowSelection={{
-                    type: "checkbox",
-                    ...rowSelection,
-                }}
-                style={{
-                    height: "100",
-                }}
-                columns={columns}
-                dataSource={data}
-                scroll={{
-                    x: 1200,
-                }}
-            />
-        </div>
+        <>
+            <Head>
+                <title>Gallery | Sistem Informasi Mutiara</title>
+            </Head>
+            <>
+                <Typography.Title level={2}>Data Gallery</Typography.Title>
+                <div className="my-5 flex items-center justify-between">
+                    <Breadcrumb
+                        items={[
+                            {
+                                title: <Link href="/secure/dashboard">Dashboard</Link>,
+                            },
+                            {
+                                title: "Gallery",
+                            },
+                        ]}
+                    />
+                </div>
+                <Card>
+                    <Table
+                        sticky
+                        bordered
+                        size="large"
+                        // style={{
+                        //     height: "100",
+                        // }}
+                        scroll={{
+                            x: 800
+                        }}
+                        columns={columns}
+                        dataSource={data}
+                    />
+                </Card>
+            </>
+        </>
     );
 }
 
 export async function getServerSideProps(ctx) {
-    const { data } = await http.get('/admin/pengumuman')
-    // if (!session) {
-    //     return {
-    //         redirect: {
-    //             permanent: false,
-    //             destination: "/login",
-    //         },
-    //         props: {},
-    //     };
-    // }
-
+    const { data } = await http.get('/gallery')
     return {
         props: {
-            pengumuman: data,
+            gallery: data,
         },
     };
 }
-

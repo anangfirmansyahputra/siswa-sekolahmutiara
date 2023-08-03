@@ -1,61 +1,41 @@
-import { AppstoreAddOutlined, BellOutlined, CalendarOutlined, CameraOutlined, CarryOutOutlined, CrownOutlined, FileSearchOutlined, FolderOutlined, PieChartOutlined, ReconciliationOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import { CalendarOutlined, CameraOutlined, CarryOutOutlined, CrownOutlined, FileSearchOutlined, PieChartOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 const items = [
     {
         label: "Dashboard",
-        key: "dashboard",
+        key: "secure/dashboard",
         icon: <PieChartOutlined />,
     },
     {
-        label: "Pengajar",
-        key: "pengajar",
-        icon: <ReconciliationOutlined />,
-    },
-    {
         label: "Ekstrakurikuler",
-        key: "ekstrakurikuler",
+        key: "secure/ekstrakurikuler",
         icon: <CalendarOutlined />,
     },
+    // {
+    //     label: "Siswa",
+    //     key: "secure/siswa",
+    //     icon: <UsergroupAddOutlined />,
+    // },
     {
-        label: "Siswa",
-        key: "siswa",
-        icon: <UsergroupAddOutlined />,
-    },
-    {
-        label: "Absensi",
-        key: "absensi",
+        label: "Nilai",
+        key: "secure/nilai",
         icon: <CarryOutOutlined />,
     },
     {
-        label: "Arsip",
-        key: "arsip",
-        icon: <FolderOutlined />,
-    },
-    {
-        label: "Pengumuman",
-        key: "pengumuman",
-        icon: <BellOutlined />,
-    },
-    {
-        label: "Kelas",
-        key: "kelas",
-        icon: <AppstoreAddOutlined />,
-    },
-    {
         label: "Prestasi",
-        key: "prestasi",
+        key: "secure/prestasi",
         icon: <CrownOutlined />,
     },
     {
         label: "Gallery",
-        key: "gallery",
+        key: "secure/gallery",
         icon: <CameraOutlined />,
     },
-    {
-        label: "Pelajaran",
-        key: "matpel",
-        icon: <FileSearchOutlined />,
-    },
+    // {
+    //     label: "Pelajaran",
+    //     key: "secure/matpel",
+    //     icon: <FileSearchOutlined />,
+    // },
 ];
 
 export default items;

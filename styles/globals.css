@@ -40,7 +40,7 @@ body {
   display: flex;
   align-items: center;
   /* justify-content: space-between !important; */
-  justify-content: end !important;
+  justify-content: space-between !important;
 }
 
 .ant-table-cell {
@@ -108,4 +108,12 @@ body {
   padding: 20px;
 }
 
-/* Sweetalert2 */
+@media (max-width:678px) {
+  .home-container {
+    padding: 10px !important;
+  }
+
+  .ant-layout-header {
+    padding: 0px 10px;
+  }
+}

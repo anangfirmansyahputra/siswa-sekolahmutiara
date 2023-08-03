@@ -1,55 +1,40 @@
-import kelasService from "@/services/kelas.service";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Breadcrumb, Button, Input, Space, Table, Typography, message } from "antd";
-import { useSession } from "next-auth/react";
+import http from '@/plugin/https';
+import prestasiService from "@/services/prestasi.service";
+import { DeleteOutlined, DownloadOutlined, EditOutlined, FullscreenOutlined, SearchOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Card, Input, Popconfirm, Space, Typography, message } from "antd";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import http from '@/plugin/https'
 
-Kelas.layout = "L1";
 
-export default function Kelas({ kelas }) {
+const { Meta } = Card;
+
+export default function Prestasi({ kelas, prestasi }) {
     // State
+    console.log(prestasi);
+
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const [loadingFirst, setLoadingFirst] = useState(true);
     const [selectedRow, setSelectedRow] = useState([]);
 
     const searchInput = useRef(null);
-    const data = [
-        {
-            key: 7,
-            kelas: 7,
-            jumlah: kelas?.data?.filter((item) => item?.kelas === "7")?.length,
-        },
-        {
-            key: 8,
-            kelas: 8,
-            jumlah: kelas?.data?.filter((item) => item?.kelas === "8")?.length,
-        },
-        {
-            key: 9,
-            kelas: 9,
-            jumlah: kelas?.data?.filter((item) => item?.kelas === "9")?.length,
-        },
-    ];
-
+    const data = [];
     const { push, asPath } = useRouter();
-    const { data: session } = useSession();
-    const token = session?.user?.user?.accessToken;
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
     };
+
     const handleReset = (clearFilters) => {
         clearFilters();
         setSearchText("");
     };
+
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div
@@ -140,9 +125,10 @@ export default function Kelas({ kelas }) {
     });
 
     const confirm = async (record) => {
+        console.log(record);
         try {
             setLoadingFirst(true);
-            const res = await kelasService.delete({ ids: selectedRow });
+            const res = await prestasiService.delete(record);
             message.success(res?.message);
             push(asPath);
         } catch (err) {
@@ -152,108 +138,68 @@ export default function Kelas({ kelas }) {
         }
     };
 
-    const columns = [
-        {
-            title: "Kelas",
-            dataIndex: "kelas",
-            key: "kelas",
-            // width: "300px",
-            ...getColumnSearchProps("kelas"),
-            // fixed: "left",
-            render: (_, record) => (
-                <Link
-                    href={{
-                        pathname: `/kelas/${record?.key}`,
-                    }}>
-                    {record?.kelas}
-                </Link>
-            ),
-        },
-        {
-            title: "Jumlah Kelas",
-            dataIndex: "jumlah",
-            key: "jumlah",
-            // width: "300px",
-            ...getColumnSearchProps("jumlah"),
-            // fixed: "left",
-        },
-    ];
-
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRow(selectedRowKeys);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === "Disabled User",
-            name: record.name,
-        }),
-    };
-
     return (
         <>
             <Head>
-                <title>Kelas | Sistem Informasi Mutiara</title>
+                <title>Prestasi | Sistem Informasi Mutiara</title>
             </Head>
             <>
-                <Typography.Title level={2}>Data Kelas</Typography.Title>
+                <Typography.Title level={2}>Data Prestasi</Typography.Title>
                 <div className="my-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
                             {
-                                title: <Link href="/">Dashboard</Link>,
+                                title: <Link href="/secure/dashboard">Dashboard</Link>,
                             },
                             {
-                                title: "Kelas",
+                                title: "Prestasi",
                             },
                         ]}
                     />
-                    <Space>
-                        <Link
-                            href={{
-                                pathname: "/kelas/tambah",
-                            }}>
-                            <Button
-                                type="default"
-                                icon={<DeleteOutlined />}>
-                                Tambah
-                            </Button>
-                        </Link>
-                    </Space>
                 </div>
-                <Table
-                    sticky
-                    bordered
-                    size="large"
-                    rowSelection={{
-                        type: "checkbox",
-                        ...rowSelection,
-                    }}
-                    style={{
-                        height: "100",
-                    }}
-                    columns={columns}
-                    dataSource={data}
-                />
+                <Input style={{ width: 300, marginBottom: 20 }} />
+                <Card>
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                        {prestasi?.data?.map((item) => (
+                            <Card
+                                className="shadow"
+                                cover={
+                                    <img
+                                        alt={item?.siswa?.name}
+                                        src={item?.img}
+                                    // height={250}
+                                    />
+                                }
+                                actions={[
+                                    <Link
+                                        target="_blank"
+                                        href={{
+                                            pathname: item?.sertifikat,
+                                        }}>
+                                        <FullscreenOutlined />
+                                    </Link>,
+                                ]}>
+                                <Meta
+                                    title={`${item?.deskripsi} (${item?.ekstrakurikuler?.name ?? "Siswa Sudah Dihapus"})`}
+                                    description={item?.siswa?.name}
+                                />
+                            </Card>
+                        ))}
+                    </div>
+                </Card>
+
             </>
         </>
     );
 }
 
 export async function getServerSideProps(ctx) {
-    const { data } = await http.get('/kelas')
-    // if (!session) {
-    //     return {
-    //         redirect: {
-    //             permanent: false,
-    //             destination: "/login",
-    //         },
-    //         props: {},
-    //     };
-    // }
+    const { data: prestasi } = await http.get('/prestasi')
 
     return {
         props: {
-            kelas: data,
+            prestasi: prestasi
         },
     };
 }
+

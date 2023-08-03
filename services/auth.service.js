@@ -1,28 +1,19 @@
-import axios from "axios";
+import http from '@/plugin/https'
 
-const { default: instance } = require("@/helpers/instance");
+const path = "/siswa/login"
 
-class AuthServices {
-    login(username, password) {
-        return axios.post(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/login", {
-            username: username,
-            password: password,
-        });
-    }
+const authService = {
+    async login(payload) {
+        const { data } = await http.post(path, payload)
 
-    loginSiswa(nis, password) {
-        return axios.post(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/siswa/login", {
-            nis: nis,
-            password: password,
-        });
-    }
+        return data
+    },
 
-    loginPengajar(username, password) {
-        return axios.post(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/admin/login", {
-            username: username,
-            password: password,
-        });
-    }
+    async me(token) {
+        const { data } = await http.post('/siswa/me', token)
+
+        return data
+    },
 }
 
-export default new AuthServices();
+export default authService

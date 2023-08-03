@@ -1,38 +1,27 @@
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import { selecUser } from "@/redux/slices/userSlices";
+import { DownOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Layout } from "antd";
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const { Header } = Layout;
 
-export default function HeaderComp() {
-    const { data } = useSession();
-    const role = data?.user?.user?.role;
+export default function HeaderComp({ showDrawer }) {
+    const user = useSelector(selecUser)
+    const router = useRouter()
 
     const items = [
         {
-            key: "1",
-            danger: false,
-            label: (
-                <Link
-                    href={{
-                        pathname: "/profile",
-                    }}>
-                    Profile
-                </Link>
-            ),
-        },
-        {
-            key: "2",
+            key: "",
             danger: true,
-            label: <div onClick={() => signOut({ callbackUrl: (role === "siswa" && "/login-siswa") || (role === "admin" && "/login") || (role === "pengajar" && "/login-pengajar") })}>Logout</div>,
+            label: <div onClick={() => router.push('/auth/login')}>Logout</div>,
         },
     ];
 
-    // console.log(data?.user?.user?.username);
-
     return (
         <Header className="site-header bg-red-500">
+            <Button onClick={showDrawer} type="text" icon={<MenuOutlined className="text-white" />}></Button>
             <Dropdown
                 menu={{
                     items,
@@ -48,7 +37,7 @@ export default function HeaderComp() {
                             }}
                         />
                     }>
-                    <span className="text-white">{data?.user?.user?.username}</span>
+                    <span className="text-white">{user?.name}</span>
                     <DownOutlined
                         style={{
                             color: "white",
