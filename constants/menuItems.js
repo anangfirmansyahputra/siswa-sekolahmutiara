@@ -3,37 +3,37 @@ import { CalendarOutlined, CameraOutlined, CarryOutOutlined, CrownOutlined, File
 const items = [
     {
         label: "Dashboard",
-        key: "secure/dashboard",
+        key: "dashboard",
         icon: <PieChartOutlined />,
     },
     {
         label: "Ekstrakurikuler",
-        key: "secure/ekstrakurikuler",
+        key: "ekstrakurikuler",
         icon: <CalendarOutlined />,
     },
     // {
     //     label: "Siswa",
-    //     key: "secure/siswa",
+    //     key: "siswa",
     //     icon: <UsergroupAddOutlined />,
     // },
     {
         label: "Nilai",
-        key: "secure/nilai",
+        key: "nilai",
         icon: <CarryOutOutlined />,
     },
     {
         label: "Prestasi",
-        key: "secure/prestasi",
+        key: "prestasi",
         icon: <CrownOutlined />,
     },
     {
         label: "Gallery",
-        key: "secure/gallery",
+        key: "gallery",
         icon: <CameraOutlined />,
     },
     // {
     //     label: "Pelajaran",
-    //     key: "secure/matpel",
+    //     key: "matpel",
     //     icon: <FileSearchOutlined />,
     // },
 ];

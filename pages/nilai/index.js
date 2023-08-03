@@ -1,12 +1,7 @@
-import siswaService from "@/services/siswa.service"
 import { RollbackOutlined } from "@ant-design/icons"
-import { Badge, Breadcrumb, Button, Card, Descriptions, Layout, Typography } from "antd"
-import dayjs from "dayjs"
-import { getSession } from "next-auth/react"
+import { Breadcrumb, Button, Card, Descriptions, Layout, Typography } from "antd"
 import Head from "next/head"
 import Link from "next/link"
-import { useRouter } from "next/router"
-import { useState } from "react"
 
 NilaiPage.layout = "L1"
 const { Content } = Layout

@@ -13,11 +13,19 @@ export default function NilaiPage() {
     const [data, setData] = useState(null)
     // let columnsWajib = [];
 
-    const totalNilai = (akademik, absen) => {
+    const totalNilai = (akademik, data) => {
         const nilaiAkademik = (akademik * 60) / 100
-        const nilaiAbsen = ((absen / 14) * 100) * 40 / 100
+        // const nilaiAbsen = ((absen / 14) * 100) * 40 / 100
+        const totalTrue = data?.filter((item) => item === true).length;
 
-        const nilaiTotal = nilaiAbsen + nilaiAbsen
+        // Menghitung total panjang array
+        const totalLength = data?.length;
+
+        // Menghitung persentase nilai true
+        const percentageTrue = Math.ceil(((totalTrue / totalLength) * 100) * 40 / 100);
+
+
+        const nilaiTotal = percentageTrue + nilaiAkademik
 
         if (nilaiTotal >= 86) {
             return 'A'
@@ -231,6 +239,18 @@ export default function NilaiPage() {
         },
     ]
 
+    const nilaiAbsen = (data) => {
+        const totalTrue = data?.filter((item) => item === true).length;
+
+        // Menghitung total panjang array
+        const totalLength = data?.length;
+
+        // Menghitung persentase nilai true
+        const percentageTrue = Math.ceil((totalTrue / totalLength) * 100);
+
+        return percentageTrue
+    }
+
     return (
         <>
             <Head>
@@ -271,13 +291,15 @@ export default function NilaiPage() {
                                             {pilihan?.ekstrakurikuler?.name}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Absen">
-                                            {pilihan?.absen}
+                                            {/* {pilihan?.absen} */}
+                                            {nilaiAbsen(wajib?.kehadiran)}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Akademik">
                                             {pilihan?.nilai}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Total">
-                                            {totalNilai(pilihan?.nilai, pilihan?.absen)}
+                                            {/* {totalNilai(pilihan?.nilai, pilihan?.absen)} */}
+                                            {totalNilai(pilihan?.nilai, pilihan?.kehadiran)}
                                         </Descriptions.Item>
                                     </>
                                 ) : <Button>Belum Terdaftar</Button>}
@@ -290,13 +312,15 @@ export default function NilaiPage() {
                                             {wajib?.ekstrakurikuler?.name}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Absen">
-                                            {wajib?.absen}
+                                            {/* {wajib?.absen} */}
+                                            {nilaiAbsen(pilihan?.kehadiran)}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Akademik">
                                             {wajib?.nilai}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Total">
-                                            {totalNilai(wajib?.nilai, wajib?.absen)}
+                                            {/* {totalNilai(wajib?.nilai, wajib?.absen)} */}
+                                            {totalNilai(wajib?.nilai, wajib?.kehadiran)}
                                         </Descriptions.Item>
                                     </>
                                 ) : <Button>Belum Terdaftar</Button>}

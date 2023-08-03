@@ -2,6 +2,7 @@ import { setUser } from "@/redux/slices/userSlices";
 import authService from "@/services/auth.service";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Skeleton, Spin, Typography } from "antd";
+import { Head } from "next/document";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -111,6 +112,7 @@ export default function Login() {
                     <p className="font-sans text-[12px] text-center text-gray-500">Copyright © 2023 Sekolah Mutiara. All Rights Reserved.</p>
                 </Spin>
             </div>
+
         </div>
     );
 }

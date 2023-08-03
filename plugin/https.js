@@ -17,7 +17,7 @@ axiosInstance.interceptors.response.use(
             const urlPath = error.response.config.url;
             if (urlPath !== "/api/auth/login") {
                 localStorage.removeItem("token");
-                // window.location.href = "/auth/login";
+                window.location.href = "/auth/login";
             }
         }
 

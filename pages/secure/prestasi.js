@@ -144,8 +144,8 @@ export default function Prestasi({ kelas, prestasi }) {
                 <title>Prestasi | Sistem Informasi Mutiara</title>
             </Head>
             <>
-                <Typography.Title level={2}>Data Prestasi</Typography.Title>
-                <div className="my-5 flex items-center justify-between">
+                <Typography.Title level={2} style={{ margin: 0, padding: 0 }}>Data Prestasi</Typography.Title>
+                <div className="mb-5 flex items-center justify-between">
                     <Breadcrumb
                         items={[
                             {
@@ -157,36 +157,36 @@ export default function Prestasi({ kelas, prestasi }) {
                         ]}
                     />
                 </div>
-                <Input style={{ width: 300, marginBottom: 20 }} />
-                <Card>
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                        {prestasi?.data?.map((item) => (
-                            <Card
-                                className="shadow"
-                                cover={
-                                    <img
-                                        alt={item?.siswa?.name}
-                                        src={item?.img}
-                                    // height={250}
-                                    />
-                                }
-                                actions={[
-                                    <Link
-                                        target="_blank"
-                                        href={{
-                                            pathname: item?.sertifikat,
-                                        }}>
-                                        <FullscreenOutlined />
-                                    </Link>,
-                                ]}>
-                                <Meta
-                                    title={`${item?.deskripsi} (${item?.ekstrakurikuler?.name ?? "Siswa Sudah Dihapus"})`}
-                                    description={item?.siswa?.name}
+                {/* <Input style={{ width: 300, marginBottom: 20 }} /> */}
+                {/* <Card> */}
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-5">
+                    {prestasi?.data?.map((item) => (
+                        <Card
+                            className="shadow"
+                            cover={
+                                <img
+                                    alt={item?.siswa?.name}
+                                    src={item?.img}
+                                // height={250}
                                 />
-                            </Card>
-                        ))}
-                    </div>
-                </Card>
+                            }
+                            actions={[
+                                <Link
+                                    target="_blank"
+                                    href={{
+                                        pathname: item?.sertifikat,
+                                    }}>
+                                    <FullscreenOutlined />
+                                </Link>,
+                            ]}>
+                            <Meta
+                                title={`${item?.deskripsi} (${item?.ekstrakurikuler?.name ?? "Siswa Sudah Dihapus"})`}
+                                description={item?.siswa?.name}
+                            />
+                        </Card>
+                    ))}
+                </div>
+                {/* </Card> */}
 
             </>
         </>
