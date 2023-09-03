@@ -24,7 +24,7 @@ export default function Gallery({ gallery }) {
             key: item._id,
             description: item?.description,
             linkGallery: item?.linkGallery,
-            ekstrakurikuler: item?.ekstrakurikuler?.name,
+            ekstrakurikuler: item?.ekstrakurikuler?.name ?? "Ekstrakurikuler telah dihapus",
             tglUpload: dayjs(item?.tglUpload).format("DD/MM/YY"),
         })
     );
@@ -153,13 +153,9 @@ export default function Gallery({ gallery }) {
             width: 100,
             ...getColumnSearchProps("linkGallery"),
             render: (_, record) => (
-                <Link
-                    target="_blank"
-                    href={{
-                        pathname: record?.linkGallery,
-                    }}>
+                <a rel="" target="_blank" href={record?.linkGallery}>
                     Lihat
-                </Link>
+                </a>
             ),
             fixed: 'right'
         },

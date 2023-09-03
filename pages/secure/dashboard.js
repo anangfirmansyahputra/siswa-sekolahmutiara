@@ -89,7 +89,7 @@ export default function Dashboard(props) {
                             }}>
                                 <Descriptions.Item label="Nama">{user?.name}</Descriptions.Item>
                                 <Descriptions.Item label="NIS">{user?.nis}</Descriptions.Item>
-                                <Descriptions.Item label="Kelas">{user?.kelas?.kelas + " " + user?.kelas?.name}</Descriptions.Item>
+                                <Descriptions.Item label="Kelas">{`${user?.kelas?.kelas ?? "Kelas"} ${user?.kelas?.name ?? "Telah Dihapus"}`}</Descriptions.Item>
                                 <Descriptions.Item label="Tempat Lahir">{user?.bop}</Descriptions.Item>
                                 <Descriptions.Item label="Tanggal Lahir">{dayjs(user?.tgl).format('YYYY-MM-DD')}</Descriptions.Item>
                                 <Descriptions.Item label="Alamat">{user?.alamat}</Descriptions.Item>
