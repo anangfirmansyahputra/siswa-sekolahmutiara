@@ -2,7 +2,7 @@ import { setUser } from "@/redux/slices/userSlices";
 import authService from "@/services/auth.service";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Skeleton, Spin, Typography } from "antd";
-import { Head } from "next/document";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -51,69 +51,74 @@ export default function Login() {
     };
 
     return (
-        <div className="w-full h-screen flex items-center justify-center bg-[#f3f3f3] rounded-lg overflow-hidden">
-            <div className="bg-white px-5 pb-5 shadow-xl w-[300px]">
-                <Spin spinning={isLoading}>
-                    <div className="mb-10">
-                        <Title
-                            className="text-center"
-                            level={4}>
-                            Sistem Ekstrakurikuler Siswa
-                        </Title>
-                    </div>
-                    <Form
-                        name="normal_login"
-                        className="login-form"
-                        form={form}
-                        style={{
-                            width: 300,
-                        }}
-                        onFinish={onFinish}>
-                        <Form.Item
-                            name="nis"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please input your NIS!",
-                                },
-                            ]}>
-                            <Input
-                                prefix={<UserOutlined className="site-form-item-icon" />}
-                                placeholder="NIS"
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="password"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please input your Password!",
-                                },
-                            ]}>
-                            <Input
-                                prefix={<LockOutlined className="site-form-item-icon" />}
-                                type="password"
-                                placeholder="Password"
-                            />
-                        </Form.Item>
+        <>
+            <Head>
+                <title>Login | Sistem Informasi Sekolah Mutiara</title>
+            </Head>
+            <div className="w-full h-screen flex items-center justify-center bg-[#f3f3f3] rounded-lg overflow-hidden">
+                <div className="bg-white px-5 pb-5 shadow-xl w-[300px]">
+                    <Spin spinning={isLoading}>
+                        <div className="mb-10">
+                            <Title
+                                className="text-center"
+                                level={4}>
+                                Sistem Ekstrakurikuler Siswa
+                            </Title>
+                        </div>
+                        <Form
+                            name="normal_login"
+                            className="login-form"
+                            form={form}
+                            style={{
+                                width: 300,
+                            }}
+                            onFinish={onFinish}>
+                            <Form.Item
+                                name="nis"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input your NIS!",
+                                    },
+                                ]}>
+                                <Input
+                                    prefix={<UserOutlined className="site-form-item-icon" />}
+                                    placeholder="NIS"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please input your Password!",
+                                    },
+                                ]}>
+                                <Input
+                                    prefix={<LockOutlined className="site-form-item-icon" />}
+                                    type="password"
+                                    placeholder="Password"
+                                />
+                            </Form.Item>
 
-                        <Form.Item>
-                            <Button
-                                style={{
-                                    width: "100%",
-                                    marginTop: 10,
-                                }}
-                                type="primary"
-                                htmlType="submit">
-                                Log in
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                    <p className="font-sans text-[12px] text-center text-gray-500">Copyright © 2023 Sekolah Mutiara. All Rights Reserved.</p>
-                </Spin>
+                            <Form.Item>
+                                <Button
+                                    style={{
+                                        width: "100%",
+                                        marginTop: 10,
+                                    }}
+                                    type="primary"
+                                    htmlType="submit">
+                                    Log in
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                        <p className="font-sans text-[12px] text-center text-gray-500">Copyright © 2023 Sekolah Mutiara. All Rights Reserved.</p>
+                    </Spin>
+                </div>
+
             </div>
-
-        </div>
+        </>
     );
 }
 

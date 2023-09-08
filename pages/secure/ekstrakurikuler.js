@@ -95,7 +95,7 @@ export default function EkstrakurikulerPage({ ekstrakurikuler }) {
             key: 'waktu',
         },
         {
-            title: 'Tipe',
+            title: 'Status',
             key: 'tipe',
             dataIndex: 'tipe',
             render: (_, { wajib }) => (

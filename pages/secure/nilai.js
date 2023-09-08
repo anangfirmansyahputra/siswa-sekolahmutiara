@@ -240,6 +240,7 @@ export default function NilaiPage() {
     ]
 
     const nilaiAbsen = (data) => {
+
         const totalTrue = data?.filter((item) => item === true).length;
 
         // Menghitung total panjang array
@@ -292,7 +293,7 @@ export default function NilaiPage() {
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Absen">
                                             {/* {pilihan?.absen} */}
-                                            {nilaiAbsen(wajib?.kehadiran)}
+                                            {nilaiAbsen(pilihan?.kehadiran)}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Akademik">
                                             {pilihan?.nilai}
@@ -313,7 +314,7 @@ export default function NilaiPage() {
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Absen">
                                             {/* {wajib?.absen} */}
-                                            {nilaiAbsen(pilihan?.kehadiran)}
+                                            {nilaiAbsen(wajib?.kehadiran)}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Akademik">
                                             {wajib?.nilai}
