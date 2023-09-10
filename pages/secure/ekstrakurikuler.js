@@ -55,7 +55,7 @@ export default function EkstrakurikulerPage({ ekstrakurikuler }) {
             const me = await authService.me({ token })
             dispatch(setUser(me.data))
 
-            message.success('Bergabung berhasil')
+            message.success('Bergabung berhasil, sedang menunggu approve dari pembimbing ekstrakurikuler')
             handleCancel()
             router.push(router.asPath)
         } catch (err) {
@@ -111,22 +111,28 @@ export default function EkstrakurikulerPage({ ekstrakurikuler }) {
             key: 'action',
             render: (_, record) => (
                 record?.wajib ? (
-                    user?.nilai?.ekstrakurikulerWajib?.ekstrakurikuler === null ?
+                    user?.nilai?.ekstrakurikulerWajib?.ekstrakurikuler === null && !user?.alredyWajib ?
                         <Button type="link" size="small" onClick={() => {
                             setIdEkstra(record.key)
                             setEkstra(record)
                             showModal()
                         }}>Gabung</Button>
-                        : <Button danger type="link" size="small">Sudah Bergabung</Button>
+                        : <Button danger type="link" size="small">{
+                            user?.alredyWajib ? "Menunggu Approve" : "Sudah Bergabung"
+                        }</Button>
 
                 ) :
-                    user?.nilai?.ekstrakurikulerPilihan?.ekstrakurikuler === null ?
+                    user?.nilai?.ekstrakurikulerPilihan?.ekstrakurikuler === null && !user?.alredyPilihan ?
                         <Button type="link" size="small" onClick={() => {
                             setIdEkstra(record.key)
                             setEkstra(record)
                             showModal()
                         }}>Gabung</Button>
-                        : <Button danger type="link" size="small">Sudah Bergabung</Button>
+                        : <Button danger type="link" size="small">
+                            {
+                                user?.alredyPilihan ? "Menunggu Approve" : "Sudah Bergabung"
+                            }
+                        </Button>
             ),
             fixed: 'right'
         },
