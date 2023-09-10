@@ -28,9 +28,6 @@ export default function Dashboard(props) {
         form.setFieldsValue({ name: user?.name, nis: user?.nis, gender: user?.gender, bop: user?.bop, alamat: user?.alamat, tgl: dayjs(user?.tgl), noTlp: user?.noTlp })
     }, [])
 
-    console.log(props);
-
-
     const handleSubmit = (values) => {
         Swal.fire({
             icon: "question",
@@ -220,7 +217,7 @@ export default function Dashboard(props) {
 
 export async function getServerSideProps(ctx) {
     const pengumuman = await pengumumanService.get({
-        for: 'siswa'
+        role: 'siswa'
     })
 
     return {
