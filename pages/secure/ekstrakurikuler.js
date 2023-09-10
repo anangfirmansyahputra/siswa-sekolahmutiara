@@ -176,7 +176,7 @@ export default function EkstrakurikulerPage({ ekstrakurikuler }) {
                     <div className="p-5">
                         <Descriptions bordered column={1}>
                             <Descriptions.Item label="Nama">{selectedData?.name}</Descriptions.Item>
-                            <Descriptions.Item label="Tipe">{selectedData?.type ? "Wajib" : "Pilihan"}</Descriptions.Item>
+                            <Descriptions.Item label="Tipe">{selectedData?.wajib ? "Wajib" : "Pilihan"}</Descriptions.Item>
                             <Descriptions.Item label="Pendaftar">{selectedData?.pendaftar}</Descriptions.Item>
                             <Descriptions.Item label="Hari">{selectedData?.hari}</Descriptions.Item>
                             <Descriptions.Item label="Jam">{selectedData?.waktu}</Descriptions.Item>
