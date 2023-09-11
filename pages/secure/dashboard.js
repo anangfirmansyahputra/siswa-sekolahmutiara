@@ -110,29 +110,31 @@ export default function Dashboard(props) {
                     </div>
                 )}
 
-                <Card className="mt-5">
-                    {props?.pengumuman?.data?.map(item => (
-                        <Alert
-                            type="success"
-                            icon={<span></span>}
-                            key={item?._id}
-                            style={{
-                                marginBottom: 10
-                            }}
-                            banner
-                            message={
-                                <>
-                                    <Typography.Title level={5}>{item?.title}</Typography.Title>
-                                    <Marquee pauseOnHover gradient={false} style={{
-                                        height: 40
-                                    }}>
-                                        {item?.content}
-                                    </Marquee>
-                                </>
-                            }
-                        />
-                    ))}
-                </Card>
+                {props?.pengumuman?.data?.length > 0 && (
+                    <Card className="mt-5">
+                        {props?.pengumuman?.data?.map(item => (
+                            <Alert
+                                type="success"
+                                icon={<span></span>}
+                                key={item?._id}
+                                style={{
+                                    marginBottom: 10
+                                }}
+                                banner
+                                message={
+                                    <>
+                                        <Typography.Title level={5}>{item?.title}</Typography.Title>
+                                        <Marquee pauseOnHover gradient={false} style={{
+                                            height: 40
+                                        }}>
+                                            {item?.content}
+                                        </Marquee>
+                                    </>
+                                }
+                            />
+                        ))}
+                    </Card>
+                )}
 
                 <Modal
                     title="Update Biodata"
