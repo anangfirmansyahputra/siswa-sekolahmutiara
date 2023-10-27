@@ -3,6 +3,7 @@ import authService from "@/services/auth.service";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Skeleton, Spin, Typography } from "antd";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -41,7 +42,8 @@ export default function Login() {
         } catch (err) {
             Swal.fire({
                 title: "Gagal",
-                text: err?.response?.data?.message || "Login gagal, silahkan coba kembali",
+                // text: err?.response?.data?.message || "Login gagal, silahkan coba kembali",
+                text: "Username dan Password yang Anda masukkan tidak valid. Silahkan coba lagi atau hubungi Admin (085738099189)",
                 icon: "error"
             })
         } finally {
@@ -58,7 +60,10 @@ export default function Login() {
             <div className="w-full h-screen flex items-center justify-center bg-[#f3f3f3] rounded-lg overflow-hidden">
                 <div className="bg-white px-5 pb-5 shadow-xl w-[300px]">
                     <Spin spinning={isLoading}>
-                        <div className="mb-10">
+                        <div className="relative aspect-video h-[100px] mx-auto">
+                            <Image src={"/assets/logo/logo.png"} fill className="object-contain mx-auto" />
+                        </div>
+                        <div className="mb-10 mt-[-20px]">
                             <Title
                                 className="text-center"
                                 level={4}>

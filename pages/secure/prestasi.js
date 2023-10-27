@@ -167,6 +167,7 @@ export default function Prestasi({ kelas, prestasi }) {
                                 <img
                                     alt={item?.siswa?.name}
                                     src={item?.img}
+                                    className='aspect-square object-contain bg-gray-50'
                                 // height={250}
                                 />
                             }

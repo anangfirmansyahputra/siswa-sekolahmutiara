@@ -75,7 +75,7 @@ export default function Dashboard(props) {
                 {!loading && (
                     <div className="flex items-start gap-5 flex-col md:flex-row">
                         <Card className="md:w-[95%] w-full" loading={loading}>
-                            <Descriptions title="Biodata" bordered column={{
+                            <Descriptions title="Biodata Diri" bordered column={{
                                 xxl: 2,
                                 xl: 2,
                                 lg: 2,
@@ -94,7 +94,7 @@ export default function Dashboard(props) {
                             </Descriptions>
 
                             <div className="mt-4 flex justify-end">
-                                <Button type="primary" onClick={() => setModalOpen(true)}>Update Biodata</Button>
+                                <Button type="primary" onClick={() => setModalOpen(true)}>Update Biodata Diri</Button>
                             </div>
                         </Card>
 

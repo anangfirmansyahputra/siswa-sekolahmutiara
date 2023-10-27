@@ -251,19 +251,81 @@ export default function NilaiPage() {
         return percentageTrue
     }
 
+    const columns = [
+        {
+            title: 'Keterangan',
+            dataIndex: 'keterangan',
+            key: 'keterangan',
+        },
+        {
+            title: 'Persentase',
+            dataIndex: 'persentase',
+            key: 'persentase',
+        },
+    ];
+
+    const dataSource = [
+        {
+            key: '1',
+            keterangan: 'Nilai Absen',
+            persentase: '30%',
+        },
+        {
+            key: '2',
+            keterangan: 'Nilai Praktek',
+            persentase: '70%',
+        },
+        {
+            key: '3',
+            keterangan: 'Total',
+            persentase: '100%',
+        },
+    ];
+
+    const columns2 = [
+        {
+            title: 'Nilai Angka',
+            dataIndex: 'nilaiAngka',
+            key: 'nilaiAngka',
+        },
+        {
+            title: 'Nilai Huruf',
+            dataIndex: 'nilaiHuruf',
+            key: 'nilaiHuruf',
+        },
+    ];
+
+    const dataSource2 = [
+        {
+            key: '1',
+            nilaiAngka: '85 < nilai ≤ 100',
+            nilaiHuruf: 'A',
+        },
+        {
+            key: '2',
+            nilaiAngka: '75 ≤ nilai ≤ 85',
+            nilaiHuruf: 'B',
+        },
+        {
+            key: '3',
+            nilaiAngka: '0 ≤ nilai < 75',
+            nilaiHuruf: 'C',
+        },
+    ];
+
     return (
         <>
             <Head>
-                <title>Nilai | Sistem Informasi Sekolah Mutiara</title>
+                <title>Nilai & Kehadiran | Sistem Informasi Sekolah Mutiara</title>
             </Head>
             <div className="pb-10">
-                <Typography.Title level={2}>Nilai</Typography.Title>
+                <Typography.Title level={2}>Nilai & Kehadiran</Typography.Title>
                 <Breadcrumb items={[
                     {
                         title: <Link href={{ pathname: "/secure/dashboard" }}>Dashboard</Link>
                     },
                     {
-                        title: "Nilai"
+                        title: "Nilai & Kehadiran"
                     }
                 ]} />
 
@@ -284,9 +346,9 @@ export default function NilaiPage() {
                 {user !== null && (
                     <Card className="mt-5">
                         <div className="flex flex-col sm:flex-row gap-5">
-                            <Descriptions className="flex-1" column={1} bordered title="Ekstrakurikuler Pilihan">
-                                {pilihan?.ekstrakurikuler !== null ? (
-                                    <>
+                            {pilihan?.ekstrakurikuler !== null ? (
+                                <div className="flex-1">
+                                    <Descriptions column={1} bordered title="Ekstrakurikuler Pilihan">
                                         <Descriptions.Item label="Nama">
                                             {pilihan?.ekstrakurikuler?.name}
                                         </Descriptions.Item>
@@ -294,20 +356,35 @@ export default function NilaiPage() {
                                             {/* {pilihan?.absen} */}
                                             {nilaiAbsen(pilihan?.kehadiran)}
                                         </Descriptions.Item>
-                                        <Descriptions.Item label="Nilai Akademik">
+                                        <Descriptions.Item label="Nilai Praktek">
                                             {pilihan?.nilai}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Total">
                                             {/* {totalNilai(pilihan?.nilai, pilihan?.absen)} */}
                                             {totalNilai(pilihan?.nilai, pilihan?.kehadiran)}
                                         </Descriptions.Item>
-                                    </>
-                                ) : <Button>Belum Terdaftar</Button>}
+                                    </Descriptions>
+                                    <div className="flex sm:flex-row flex-col w-full gap-5">
+                                        <Table bordered style={{
+                                            marginTop: "10px",
+                                            width: "100%"
+                                        }} columns={columns} dataSource={dataSource} pagination={false} />
+                                        <Table bordered style={{
+                                            marginTop: "10px",
+                                            width: "100%"
+                                        }} columns={columns2} dataSource={dataSource2} pagination={false} />
+                                    </div>
+                                </div>
+                            )
+                                : (
+                                    <Descriptions className="flex-1" column={1} bordered title="Ekstrakurikuler Pilihan">
+                                        <Button>Belum Terdaftar</Button>
+                                    </Descriptions>
+                                )}
 
-                            </Descriptions>
-                            <Descriptions className="flex-1" bordered title="Ekstrakurikuler Wajib" column={1}>
-                                {wajib?.ekstrakurikuler !== null ? (
-                                    <>
+                            {wajib?.ekstrakurikuler !== null ? (
+                                <div className="flex-1" >
+                                    <Descriptions bordered title="Ekstrakurikuler Wajib" column={1}>
                                         <Descriptions.Item label="Nama">
                                             {wajib?.ekstrakurikuler?.name}
                                         </Descriptions.Item>
@@ -315,16 +392,31 @@ export default function NilaiPage() {
                                             {/* {wajib?.absen} */}
                                             {nilaiAbsen(wajib?.kehadiran)}
                                         </Descriptions.Item>
-                                        <Descriptions.Item label="Nilai Akademik">
+                                        <Descriptions.Item label="Nilai Praktek">
                                             {wajib?.nilai}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Nilai Total">
                                             {/* {totalNilai(wajib?.nilai, wajib?.absen)} */}
                                             {totalNilai(wajib?.nilai, wajib?.kehadiran)}
                                         </Descriptions.Item>
-                                    </>
-                                ) : <Button>Belum Terdaftar</Button>}
-                            </Descriptions>
+                                    </Descriptions>
+                                    <div className="flex flex-col sm:flex-row w-full gap-5">
+                                        <Table bordered style={{
+                                            marginTop: "10px",
+                                            width: "100%"
+                                        }} columns={columns} dataSource={dataSource} pagination={false} />
+                                        <Table bordered style={{
+                                            marginTop: "10px",
+                                            width: "100%"
+                                        }} columns={columns2} dataSource={dataSource2} pagination={false} />
+                                    </div>
+                                </div>
+                            ) :
+                                <Descriptions className="flex-1" bordered title="Ekstrakurikuler Wajib" column={1}>
+                                    <Button>Belum Terdaftar</Button>
+                                </Descriptions>
+                            }
+
                         </div>
                     </Card>
 

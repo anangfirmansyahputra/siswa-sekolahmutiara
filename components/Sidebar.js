@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 export default function Sidebar({ onClose, open }) {
     const { pathname, push } = useRouter();
 
-    const selectedKey = (pathname === "/secure/dashboard" && "dashboard") || (pathname.includes("/secure/pengajar") && "pengajar") || (pathname.includes("/secure/ekstrakurikuler") && "ekstrakurikuler") || (pathname.includes("/secure/siswa") && "siswa") || (pathname.includes("/secure/absensi") && "absensi") || (pathname.includes("/secure/arsib") && "arsib") || (pathname.includes("/secure/pengumuman") && "pengumuman") || (pathname.includes("/secure/ekstraku") && "ekstraku");
+    const selectedKey = (pathname === "/secure/dashboard" && "dashboard") || (pathname.includes("/secure/pengajar") && "pengajar") || (pathname.includes("/secure/ekstrakurikuler") && "ekstrakurikuler") || (pathname.includes("/secure/siswa") && "siswa") || (pathname.includes("/secure/nilai-kehadiran") && "nilai-kehadiran") || (pathname.includes("/secure/arsib") && "arsib") || (pathname.includes("/secure/pengumuman") && "pengumuman") || (pathname.includes("/secure/prestasi") && "prestasi");
 
     return (
         <Drawer title="Menu" placement="left" onClose={onClose} open={open} width={250}>

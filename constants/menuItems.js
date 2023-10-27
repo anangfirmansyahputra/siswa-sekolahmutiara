@@ -17,8 +17,8 @@ const items = [
     //     icon: <UsergroupAddOutlined />,
     // },
     {
-        label: "Nilai",
-        key: "nilai",
+        label: "Nilai & Kehadiran",
+        key: "nilai-kehadiran",
         icon: <CarryOutOutlined />,
     },
     {
